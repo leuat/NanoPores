@@ -1,19 +1,71 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
+import SimVis 1.0
+import MySimulator 1.0
 
 Window {
     visible: true
+    width: 1024
+    height: 768
+    MySimulator {
+        id: simulator
 
-    MouseArea {
+    }
+
+    Visualizer {
         anchors.fill: parent
-        onClicked: {
-            Qt.quit();
+        simulator: simulator
+        camera: camera
+        backgroundColor: "black"
+
+        SkyBox {
+            id: skybox
+            camera: camera
+            texture: ":/cubemap.jpg"
+        }
+
+        TrackballNavigator {
+            id: navigator
+            anchors.fill: parent
+            camera: camera
+        }
+
+        TriangleCollection {
+            id: triangles
+
+            Light {
+                id: light
+                ambientColor: "blue"
+                specularColor: "white"
+                diffuseColor: "green"
+                ambientIntensity: 0.025
+                diffuseIntensity: 0.5
+                specularIntensity: 0.01
+                shininess: 100.0
+                attenuation: 0.01
+                position: camera.position
+            }
+
+            SkyBoxReflection {
+                id: reflection
+                skybox: skybox
+                reflectivity: 0.2
+            }
+
+            SimplexBump {
+                id: simplexBump
+                enabled: true
+                intensity: 0.1
+                scale: 1.0
+            }
         }
     }
 
-    Text {
-        text: qsTr("Hello World")
-        anchors.centerIn: parent
+    Camera {
+        id: camera
+
     }
+
+
 }
 

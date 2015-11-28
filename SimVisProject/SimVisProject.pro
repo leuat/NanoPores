@@ -3,7 +3,8 @@ CONFIG += c++11
 
 QT += qml quick widgets opengl openglextensions
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    mysimulator.cpp
 
 RESOURCES += qml.qrc
 
@@ -12,4 +13,7 @@ QML_IMPORT_PATH =
 
 # Default rules for deployment.
 include(deployment.pri)
-include(../library_deployment.pri)
+include(../SimVis/library_deployment.pri)
+
+HEADERS += \
+    mysimulator.h
