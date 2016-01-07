@@ -62,22 +62,22 @@ double* CNoise::generateSpectralWeights (double lacunarity,
 //
 // Not really used, but could be useful for nice dust patterns
 //
-double CNoise::getRidgedMf(CVector p, float frequency, int octaves, float lacunarity, float warp, float offset, float gain)
+double CNoise::getRidgedMf(QVector3D p, float frequency, int octaves, float lacunarity, float warp, float offset, float gain)
 {
   double value = 0.0;
   double weight = 1.0;
 
-  float w = -0.05f;
+  double w = -0.05f;
   
   if (weights == 0)
     weights = generateSpectralWeights(lacunarity, octaves, w, frequency);
 		    
-  CVector vt = p;
+  QVector3D vt = p;
   for (int octave = 0; octave < octaves; octave++) {
-    double signal = raw_3d(vt.x, vt.y, vt.z);
+    double signal = raw_3d(vt.x(), vt.y(), vt.z());
     
     // Make the ridges.
-    signal = abs (signal);
+    signal = fabs (signal);
     signal = offset - signal;
 
 		      // Square the signal to increase the sharpness of the ridges.

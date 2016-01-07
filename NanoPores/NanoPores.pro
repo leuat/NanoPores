@@ -1,10 +1,15 @@
 TEMPLATE = app
 CONFIG += c++11
 
+#CONFIG -=app_bundle
 QT += qml quick widgets opengl openglextensions
 
 SOURCES += main.cpp \
-    mysimulator.cpp
+    mysimulator.cpp \
+    simplexnoise.cpp \
+    perlin.cpp \
+    CNoise.cpp \
+    io.cpp
 
 RESOURCES += qml.qrc
 
@@ -16,4 +21,9 @@ include(deployment.pri)
 include(../SimVis/library_deployment.pri)
 
 HEADERS += \
-    mysimulator.h
+    mysimulator.h \
+    simplexnoise.h \
+    perlin.h \
+    CNoise.h \
+    io.h \
+    CSimplex.h
