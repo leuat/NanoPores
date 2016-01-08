@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     simplexnoise.cpp \
     perlin.cpp \
     CNoise.cpp \
-    io.cpp
+    io.cpp \
+    particle.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,4 +27,5 @@ HEADERS += \
     perlin.h \
     CNoise.h \
     io.h \
-    CSimplex.h
+    CSimplex.h \
+    particle.h

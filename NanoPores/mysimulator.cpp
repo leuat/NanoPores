@@ -14,45 +14,61 @@ SimulatorWorker *MySimulator::createWorker()
 }
 
 
-void MyWorker::ConstrainParticles() {
+void MyWorker::AddParticleToSphere(Particle* p, Spheres *spheres) {
+    QVector3D qc = p->getType().color;
+    spheres->colors().append(QColor(qc.x()*255.0, qc.y()*255.0, qc.z()*255.0, 1));
+    spheres->positions().append( m_particles.ScalePos(p,5));
+    spheres->scales().append(p->getType().size);
+}
+
+void MyWorker::ConstrainParticles(Spheres* spheres) {
     if (workerData==nullptr)
         return;
 
-    m_positions.clear();
+    spheres->colors().clear();
+    spheres->scales().clear();
+    spheres->positions().clear();
 
     CSimplex noise((int)workerData->value2(), 1, workerData->persistence(), 1253);
+    m_particles.BoundingBox();
+    for (Particle* pos : m_particles.getParticles()) {
 
-    float LARGE = 1E10;
-
-    QVector3D boundsMin(LARGE, LARGE, LARGE);
-    QVector3D boundsMax(-LARGE, -LARGE, -LARGE);
-    for (QVector3D p: m_orgPositions) {
-        for (int i=0;i<3;i++) {
-            boundsMin[i] = min(boundsMin[i],p[i]);
-            boundsMax[i] = max(boundsMax[i],p[i]);
-        }
-    }
-
-    for (QVector3D pos : m_orgPositions) {
-
-        QVector3D p = pos*workerData->value1();
-        if (!(pos.x()<boundsMin[0]*workerData->slice() || pos.x()>boundsMax[0]*workerData->slice()))
+        QVector3D p = pos->getPos()*workerData->value1();
+        if (!(pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
+              pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
         {
 
             float val = noise.Get(p.x(), p.y(),p.z());
-            val = pow(val, workerData->sharpness());
+            //val = pow(val, workerData->sharpness());
 
             if (workerData->abs()>0.5)
                 val = fabs(val);
-
-            if (val>workerData->threshold())
-                m_positions.append(pos);
+            if (workerData->invert()<0.5) {
+                if (val>workerData->threshold())
+                    AddParticleToSphere(pos, spheres);
+               }
+            else {
+                if (val<workerData->threshold())
+                    AddParticleToSphere(pos, spheres);
+            }
        }
     }
 
 }
 
+void MyWorker::synchronizeRenderer(Renderable *renderableObject) {
+    Spheres *spheres = qobject_cast<Spheres*>(renderableObject);
 
+    if(spheres) {
+        spheres->setColors(m_spheres.colors());
+        spheres->setPositions(m_spheres.positions());
+        spheres->setScales(m_spheres.scales());
+
+        spheres->setDirty(true);
+        return;
+    }
+
+}
 
 
 MyWorker::MyWorker()
@@ -70,10 +86,9 @@ MyWorker::MyWorker()
 
     IO::save("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/chinchin.xyz", m_positions);
 */
-    IO::open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/chinchin.xyz", m_orgPositions);
+//    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/chinchin.xyz");
+    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz");
 
-
-    ConstrainParticles();
 }
 
 
@@ -82,14 +97,12 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
     MySimulator *mySimulator = qobject_cast<MySimulator*>(simulator);
     if(mySimulator) {
         workerData = mySimulator->data();
-     //   qDebug() << workerData->value1();
     }
 }
 
 void MyWorker::work()
 {
     if (workerData!=nullptr) {
-        ConstrainParticles();
-
+        ConstrainParticles(&m_spheres);
     }
 }

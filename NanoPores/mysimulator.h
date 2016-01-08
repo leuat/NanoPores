@@ -7,7 +7,7 @@
 #include <QVector>
 #include <QVector3D>
 #include <QMap>
-
+#include "particle.h"
 
 class WorkerData : public QObject {
     Q_OBJECT
@@ -19,7 +19,7 @@ class WorkerData : public QObject {
     Q_PROPERTY(float persistence READ persistence WRITE setPersistence NOTIFY persistenceChanged)
     Q_PROPERTY(float sharpness READ sharpness WRITE setSharpness NOTIFY sharpnessChanged)
     Q_PROPERTY(float abs READ abs WRITE setAbs NOTIFY absChanged)
-
+    Q_PROPERTY(float invert READ invert WRITE setInvert NOTIFY invertChanged)
 
     float m_value1;
 
@@ -34,6 +34,8 @@ class WorkerData : public QObject {
     float m_sharpness;
 
     float m_abs;
+
+    float m_invert;
 
 public:
     float value1() const
@@ -68,6 +70,11 @@ public:
     float abs() const
     {
         return m_abs;
+    }
+
+    float invert() const
+    {
+        return m_invert;
     }
 
 public slots:
@@ -133,6 +140,15 @@ public slots:
         emit absChanged(abs);
     }
 
+    void setInvert(float invert)
+    {
+        if (m_invert == invert)
+            return;
+
+        m_invert = invert;
+        emit invertChanged(invert);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -141,19 +157,22 @@ signals:
     void persistenceChanged(float persistence);
     void sharpnessChanged(float sharpness);
     void absChanged(float abs);
+    void invertChanged(float invert);
 };
 
 
-class MyWorker : public QuickWorker
+class MyWorker : public SimulatorWorker
 {
     Q_OBJECT
 
 
 private:
     WorkerData* workerData;
-    QVector<QVector3D> m_orgPositions;
-    void ConstrainParticles();
+    Particles m_particles;
+    Spheres m_spheres;
 
+    void ConstrainParticles(Spheres* spheres);
+    void AddParticleToSphere(Particle* p, Spheres *spheres);
 
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
@@ -161,6 +180,10 @@ private:
 
 public:
     MyWorker();
+
+    // SimulatorWorker interface
+private:
+    void synchronizeRenderer(Renderable *renderableObject);
 };
 
 class MySimulator : public Simulator

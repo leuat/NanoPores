@@ -20,6 +20,7 @@ Window {
             slice: sliderSlice.value
             sharpness: sliderSharpness.value
             abs: sliderAbs.value
+            invert: sliderInvert.value
 
         }
     }
@@ -53,12 +54,12 @@ Window {
 
             Light {
                 id: light
-                ambientColor: Qt.rgba(1, 0.3, 0.05, 1);
+                ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
                 specularColor: "white"
                 diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
-                ambientIntensity: 0.05
+                ambientIntensity: 0.02
                 diffuseIntensity: 1
-                specularIntensity: 0.02
+                specularIntensity: 0.8
                 shininess: 50.0
                 attenuation: 0.2
                 position: camera.position
@@ -72,7 +73,7 @@ Window {
 */
             SimplexBump {
                 id: simplexBump
-                enabled: true
+                enabled: false
                 intensity: 0.1
                 scale: 1.0
             }
@@ -80,7 +81,7 @@ Window {
     }
 
     Rectangle {
-        width: 400
+        width: 450
         height: 400
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
@@ -185,15 +186,15 @@ Window {
             x: 5
             y: 215
             Label {
-                text: "Sharpness:"
+                text: "Translate:"
                 color: "white"
             }
 
             Slider {
                 id: sliderSharpness
-                value: 1
-                minimumValue: 0
-                maximumValue: 4
+                value: 0
+                minimumValue: -1
+                maximumValue: 1
                 width: parent.parent.width
             }
         }
@@ -208,6 +209,22 @@ Window {
             Slider {
                 id: sliderAbs
                 value: 1
+                minimumValue: 0
+                maximumValue: 1
+                width: parent.parent.width
+            }
+        }
+        Row {
+            x: 5
+            y: 275
+            Label {
+                text: "Invert:"
+                color: "white"
+            }
+
+            Slider {
+                id: sliderInvert
+                value: 0
                 minimumValue: 0
                 maximumValue: 1
                 width: parent.parent.width
