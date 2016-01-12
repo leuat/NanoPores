@@ -36,6 +36,8 @@ public:
         map.insert("Ar", ParticleType("Ar",1, QVector3D(1,1,0.2)));
         map.insert("Si", ParticleType("Si", 1, QVector3D(1,1,0.3)));
         map.insert("O", ParticleType("O", 0.5, QVector3D(1,0.3,0.2)));
+        map.insert("1", ParticleType("Si", 1, QVector3D(0.8,1,0.3)));
+        map.insert("2", ParticleType("O", 0.5, QVector3D(1,0.4,0.2)));
     }
 
     QMap<QString, ParticleType> getMap() const;
@@ -80,6 +82,8 @@ public:
         particles.clear();
     }
 
+
+
     int size() {
         return particles.size();
     }
@@ -93,7 +97,7 @@ public:
     }
 
     void BoundingBox( ) {
-        float LARGE = 1E10;
+        float LARGE = 1E20;
 
         boundsMin = QVector3D(LARGE, LARGE, LARGE);
         boundsMax = QVector3D(-LARGE, -LARGE, -LARGE);
@@ -106,7 +110,7 @@ public:
         boundsSize = (boundsMax - boundsMin).length();
     }
     QVector3D ScalePos(Particle* p, float scale) {
-        return (p->getPos() - (boundsMax-boundsMin)*0.5)/boundsSize*scale;
+        return (p->getPos() - (boundsMax+boundsMin)*0.5)/boundsSize*scale;
     }
 
     QVector3D getBoundsMin() const;
@@ -115,6 +119,26 @@ public:
 
 
     float getBoundsSize() const;
+};
+
+class NBHList {
+private:
+    QVector<Particles> list;
+
+    Particle* findNBH(Particle* org, Particles& lst, double ha);
+
+public:
+    Particles& operator[](const int i) {
+        return list[i];
+    }
+
+    int size() {
+        return list.size();
+    }
+
+    void Create(Particles& plist);
+
+
 };
 
 

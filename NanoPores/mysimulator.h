@@ -8,7 +8,7 @@
 #include <QVector3D>
 #include <QMap>
 #include "particle.h"
-
+#include "QMLPlot/linegraph.h"
 class WorkerData : public QObject {
     Q_OBJECT
 
@@ -20,7 +20,11 @@ class WorkerData : public QObject {
     Q_PROPERTY(float sharpness READ sharpness WRITE setSharpness NOTIFY sharpnessChanged)
     Q_PROPERTY(float abs READ abs WRITE setAbs NOTIFY absChanged)
     Q_PROPERTY(float invert READ invert WRITE setInvert NOTIFY invertChanged)
+    Q_PROPERTY(bool enableCutting READ enableCutting WRITE setEnableCutting NOTIFY enableCuttingChanged)
+    Q_PROPERTY(QString fileToOpen READ fileToOpen WRITE setFileToOpen NOTIFY fileToOpenChanged)
+    Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
 
+    Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     float m_value1;
 
     float m_value2;
@@ -29,6 +33,8 @@ class WorkerData : public QObject {
 
     float m_slice;
 
+    bool initialized = false;
+
     float m_persistence;
 
     float m_sharpness;
@@ -36,6 +42,17 @@ class WorkerData : public QObject {
     float m_abs;
 
     float m_invert;
+
+
+
+    bool m_enableCutting;
+
+    QString m_fileToOpen;
+
+    QString m_fileToSave;
+
+
+    LineGraphDataSource* m_dataSource;
 
 public:
     float value1() const
@@ -77,7 +94,35 @@ public:
         return m_invert;
     }
 
+    bool enableCutting() const
+    {
+        return m_enableCutting;
+    }
+
+    QString fileToOpen() const
+    {
+        return m_fileToOpen;
+    }
+
+    QString fileToSave() const
+    {
+        return m_fileToSave;
+    }
+
+
+    LineGraphDataSource* dataSource() const
+    {
+        return m_dataSource;
+    }
+
 public slots:
+    void Allocate() {
+        if (initialized)
+            return;
+ //       m_dataSource = new LineGraphDataSource();
+        initialized = true;
+       }
+
     void setValue1(float value1)
     {
         if (m_value1 == value1)
@@ -149,6 +194,43 @@ public slots:
         emit invertChanged(invert);
     }
 
+    void setEnableCutting(bool enableCutting)
+    {
+        if (m_enableCutting == enableCutting)
+            return;
+
+        m_enableCutting = enableCutting;
+        emit enableCuttingChanged(enableCutting);
+    }
+
+    void setFileToOpen(QString fileToOpen)
+    {
+        if (m_fileToOpen == fileToOpen)
+            return;
+
+        m_fileToOpen = fileToOpen;
+        emit fileToOpenChanged(fileToOpen);
+    }
+
+    void setFileToSave(QString fileToSave)
+    {
+        if (m_fileToSave == fileToSave)
+            return;
+
+        m_fileToSave = fileToSave;
+        emit fileToSaveChanged(fileToSave);
+    }
+
+
+    void setDataSource(LineGraphDataSource* dataSource)
+    {
+        if (m_dataSource == dataSource)
+            return;
+
+        m_dataSource = dataSource;
+        emit dataSourceChanged(dataSource);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -158,6 +240,10 @@ signals:
     void sharpnessChanged(float sharpness);
     void absChanged(float abs);
     void invertChanged(float invert);
+    void enableCuttingChanged(bool enableCutting);
+    void fileToOpenChanged(QString fileToOpen);
+    void fileToSaveChanged(QString fileToSave);
+    void dataSourceChanged(LineGraphDataSource* dataSource);
 };
 
 
@@ -165,21 +251,24 @@ class MyWorker : public SimulatorWorker
 {
     Q_OBJECT
 
-
 private:
     WorkerData* workerData;
     Particles m_particles;
     Spheres m_spheres;
 
-    void ConstrainParticles(Spheres* spheres);
-    void AddParticleToSphere(Particle* p, Spheres *spheres);
-
+    void constrainParticles(Spheres* spheres, Particles* extraList);
+    void AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
+    void openFile();
+    void saveFile();
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
     virtual void work();
 
 public:
     MyWorker();
+    ~MyWorker() {
+        m_particles.clear();
+    }
 
     // SimulatorWorker interface
 private:

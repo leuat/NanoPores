@@ -10,7 +10,10 @@ SOURCES += main.cpp \
     perlin.cpp \
     CNoise.cpp \
     io.cpp \
-    particle.cpp
+    particle.cpp \
+    QMLPlot/linegraph.cpp \
+    QMLPlot/graph.cpp \
+    QMLPlot/figure.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,4 +31,7 @@ HEADERS += \
     CNoise.h \
     io.h \
     CSimplex.h \
-    particle.h
+    particle.h \
+    QMLPlot/linegraph.h \
+    QMLPlot/graph.h \
+    QMLPlot/figure.h

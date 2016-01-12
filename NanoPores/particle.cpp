@@ -4,13 +4,15 @@
 #include <iostream>
 #include <QFile>
 #include <QTextStream>
-
+#include <QDebug>
 using namespace std;
 
 QVector3D Particle::getPos() const
 {
     return pos;
+
 }
+
 
 void Particle::setPos(const QVector3D &value)
 {
@@ -31,7 +33,6 @@ void Particle::setType(const ParticleType &value)
 {
     type = value;
 }
-
 
 
 float Particles::getBoundsSize() const
@@ -55,12 +56,15 @@ void Particles::open(const char *filename) {
        QTextStream in(&inputFile);
        int cnt = 0;
 
+
        while (!in.atEnd())
        {
           QString line = in.readLine();
-          cnt++;
           if (cnt>=2) {
               QStringList lst = line.split(" ");
+              if (lst.size()!=4)
+                  continue;
+//              qDebug() << lst[0];
               ParticleType pt = ParticleTypes::getInstance().getMap()[lst[0]];
               QVector3D pos(lst[1].toFloat(),lst[2].toFloat(),lst[3].toFloat());
               Particle* p = new Particle();
@@ -70,9 +74,11 @@ void Particles::open(const char *filename) {
               p->setType(pt);
               particles.append(p);
 
-
           }
+          cnt++;
+
        }
+//        qDebug()<< "DONE loading " << particles.size();
        inputFile.close();
     }
 
@@ -98,7 +104,7 @@ void Particles::save(const char* filename) {
         file << particles.count() << endl;
         file << "The is an optional comment line that can be empty." << endl;
         for(Particle* p : particles) {
-            file << p->getType().name.toStdString() << p->getPos().x() << " " << p->getPos().y() << " " << p->getPos().z() << endl;
+            file << p->getType().name.toStdString() <<" " << p->getPos().x() << " " << p->getPos().y() << " " << p->getPos().z() << endl;
         }
         file.close();
     }
@@ -117,4 +123,32 @@ QVector3D Particles::getBoundsMax() const
 QMap<QString, ParticleType> ParticleTypes::getMap() const
 {
     return map;
+}
+
+
+Particle* NBHList::findNBH(Particle *org, Particles &lst, double threshold)
+{
+    for(int i=0;i < lst.size();i++)
+        if ((lst[i]->getPos() - org->getPos()).lengthSquared()<threshold) {
+            Particle* p = lst[i];
+            lst.getParticles().removeAt(i);
+            return p;
+        }
+    return nullptr;
+
+}
+
+void NBHList::Create(Particles& orgList)
+{
+    float threshold = 0.01;
+    Particles plist;
+    plist.copyFrom(orgList);
+    list.clear();
+    Particle* p = plist[0];
+    plist.getParticles().removeAt(0);
+
+
+
+
+
 }

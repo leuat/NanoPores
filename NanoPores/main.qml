@@ -4,6 +4,10 @@ import SimVis 1.0
 import MySimulator 1.0
 import WorkerData 1.0
 import QtQuick.Controls 1.4
+import QtQuick.Dialogs 1.0
+import Qt.labs.settings 1.0
+import QMLPlot 1.0
+
 
 
 Window {
@@ -11,8 +15,19 @@ Window {
     width: 1600
     height: 1024
     MySimulator {
-        id: simulator
+        id: simulator1
+        data: WorkerData {
+            id: data1
+            enableCutting: false
+
+
+        }
+    }
+
+    MySimulator {
+        id: simulator2
         data: WorkerData{
+            id: data2
             threshold: sliderThreshold.value
             value1: sliderScale.value
             value2: sliderOctaves.value
@@ -21,16 +36,155 @@ Window {
             sharpness: sliderSharpness.value
             abs: sliderAbs.value
             invert: sliderInvert.value
+            enableCutting: true
+            dataSource: LineGraphDataSource {
+                id: datasource1
+            }
+
 
         }
     }
 
 
 
+
     Visualizer {
-        anchors.fill: parent
-        simulator: simulator
-        camera: camera
+  //      anchors.fill: parent
+        width: parent.width*0.5
+        height: parent.height*0.5;
+        simulator: simulator1
+        camera: Camera {
+            id: camera1
+        }
+
+        backgroundColor: "black"
+
+        TrackballNavigator {
+            id: navigator1
+            anchors.fill: parent
+            camera: camera1
+        }
+
+        Spheres {
+            id: spheres1
+            visible: true
+            color: "white"
+            scale: sliderSize.value
+
+
+            Light {
+                id: light1
+                ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
+                specularColor: "white"
+                diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
+                ambientIntensity: 0.02
+                diffuseIntensity: 1
+                specularIntensity: 0.8
+                shininess: 50.0
+                attenuation: 0.2
+                position: camera1.position
+            }
+
+        }
+
+        Button {
+            id: btnOpen
+            text: "Open"
+            onClicked: {
+                fileDialogOpenOriginal.mode = "mode1"
+                fileDialogOpenOriginal.open()
+            }
+        }
+
+        FileDialog {
+            id: fileDialogOpenOriginal
+
+            property string mode
+            title: "Please choose a file"
+            //folder: shortcuts.home
+            /*Settings {
+                property alias url: fileDialogOpenOriginal.folder
+            }
+*/
+            onAccepted: {
+                if (mode=="mode1")
+                    data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                if (mode=="mode2")
+                    data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+            }
+            onRejected: {
+            }
+            Component.onCompleted: visible = false
+        }
+
+        FileDialog {
+            id: fileDialogSave
+            selectExisting : false
+             property string mode
+            title: "Please choose a location to save"
+            //folder: shortcuts.home
+            /*Settings {
+                property alias url: fileDialogOpenOriginal.folder
+            }
+*/
+            onAccepted: {
+                data2.fileToSave = fileDialogSave.fileUrls.toString();
+            }
+            onRejected: {
+            }
+            Component.onCompleted: visible = false
+        }
+
+    }
+
+/*    Timer {
+           property int numPoints: 0
+           interval: 10
+           repeat: true
+           running: true
+           onTriggered: {
+               var x = numPoints*Math.PI/100
+               var y = Math.sin(x)
+               dataSource.addPoint(x,y)
+               figure.xMin = 0
+               figure.xMax = 2*Math.PI
+                figure.xMax = x
+                figure.xMin = (numPoints-500)*Math.PI/100
+               numPoints++
+           }
+       }*/
+       Figure {
+           id: figure
+           //anchors.fill: parent
+           //color: "red"
+           width: parent.width*0.5
+           height: parent.height*0.5
+           y: parent.height*0.5
+           xMin: 0
+           xMax: 10
+           yMin: -1
+           yMax: 1
+           xLabel: "t [s] "
+           yLabel: "T [K]"
+           title: "Temperature"
+           LineGraph {
+               id: graph
+               dataSource: datasource1
+               width: 2
+               // style: Qt.DotLine
+           }
+       }
+
+
+    Visualizer {
+        width: parent.width*0.5
+        height: parent.height
+
+        x: parent.width*0.5
+        simulator: simulator2
+        camera: Camera {
+            id: camera2
+        }
         backgroundColor: "black"
 
         /*        SkyBox {
@@ -40,20 +194,20 @@ Window {
         }
 */
         TrackballNavigator {
-            id: navigator
+            id: navigator2
             anchors.fill: parent
-            camera: camera
+            camera: camera2
         }
 
         Spheres {
-            id: spheres
+            id: spheres2
             visible: true
             color: "white"
             scale: sliderSize.value
 
 
             Light {
-                id: light
+                id: light2
                 ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
                 specularColor: "white"
                 diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
@@ -62,7 +216,7 @@ Window {
                 specularIntensity: 0.8
                 shininess: 50.0
                 attenuation: 0.2
-                position: camera.position
+                position: camera2.position
             }
 
             /*            SkyBoxReflection {
@@ -79,16 +233,39 @@ Window {
             }
         }
     }
+    Button {
+        x: parent.width*0.5
+        y: 0
+        id: btnOpen2
+        text: "Open"
+        onClicked: {
+            fileDialogOpenOriginal.mode = "mode2"
+            fileDialogOpenOriginal.open()
+        }
+    }
+    Button {
+        x: parent.width*0.5
+        y: 25
+        id: btnSave
+        text: "Save"
+        onClicked: {
+            fileDialogSave.open()
+        }
+    }
 
     Rectangle {
-        width: 450
+        width: 200
         height: 400
+        y: 50;
+        x: parent.width*0.5
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
 
         Row {
             x: 5
             y: 5
+            width: parent.width
+
             Label {
                 text: "Threshold:"
                 color: "white"
@@ -99,12 +276,12 @@ Window {
                 value: 0.5
                 minimumValue: -1
                 maximumValue: 1
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 40
+            width: parent.width
             Label {
                 text: "Scale:"
                 color: "white"
@@ -115,12 +292,12 @@ Window {
                 value: 1
                 minimumValue: 0
                 maximumValue: 4
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 75
+            width: parent.width
             Label {
                 text: "Octaves:"
                 color: "white"
@@ -131,12 +308,12 @@ Window {
                 value: 1
                 minimumValue: 1
                 maximumValue: 8
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 110
+            width: parent.width
             Label {
                 text: "Size:"
                 color: "white"
@@ -147,12 +324,12 @@ Window {
                 value: 0.05
                 minimumValue: 0
                 maximumValue: 0.5
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 145
+            width: parent.width
             Label {
                 text: "Slice:"
                 color: "white"
@@ -163,12 +340,12 @@ Window {
                 value: 1
                 minimumValue: 0
                 maximumValue: 1
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 180
+            width: parent.width
             Label {
                 text: "Persistence:"
                 color: "white"
@@ -179,12 +356,12 @@ Window {
                 value: 1
                 minimumValue: 0
                 maximumValue: 2
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 215
+            width: parent.width
             Label {
                 text: "Translate:"
                 color: "white"
@@ -195,12 +372,12 @@ Window {
                 value: 0
                 minimumValue: -1
                 maximumValue: 1
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 240
+            width: parent.width
             Label {
                 text: "Abs:"
                 color: "white"
@@ -211,12 +388,12 @@ Window {
                 value: 1
                 minimumValue: 0
                 maximumValue: 1
-                width: parent.parent.width
             }
         }
         Row {
             x: 5
             y: 275
+            width: parent.width
             Label {
                 text: "Invert:"
                 color: "white"
@@ -227,15 +404,10 @@ Window {
                 value: 0
                 minimumValue: 0
                 maximumValue: 1
-                width: parent.parent.width
             }
         }
     }
 
-    Camera {
-        id: camera
-
-    }
 
 
 }
