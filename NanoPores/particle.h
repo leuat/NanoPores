@@ -68,6 +68,7 @@ class Particles {
 public:
     QVector<Particle *>& getParticles();
 
+
     void save(const char *filename);
     void open(const char *filename);
     void copyFrom(Particles& plist);
@@ -82,6 +83,7 @@ public:
         particles.clear();
     }
 
+    void getVector3DList(QVector<QVector3D>& list);
 
 
     int size() {

@@ -14,12 +14,19 @@ Window {
     visible: true
     width: 1600
     height: 1024
+
+    property real splitWindow : 0.6
+
+
     MySimulator {
         id: simulator1
         data: WorkerData {
             id: data1
             enableCutting: false
-
+            lblInfo: lblinfo1.text
+            dataSource: LineGraphDataSource {
+                id: datasource1
+            }
 
         }
     }
@@ -38,8 +45,9 @@ Window {
             invert: sliderInvert.value
             enableCutting: true
             dataSource: LineGraphDataSource {
-                id: datasource1
+                id: datasource2
             }
+            lblInfo: lblinfo2.text
 
 
         }
@@ -51,7 +59,7 @@ Window {
     Visualizer {
   //      anchors.fill: parent
         width: parent.width*0.5
-        height: parent.height*0.5;
+        height: parent.height*splitWindow;
         simulator: simulator1
         camera: Camera {
             id: camera1
@@ -77,7 +85,7 @@ Window {
                 ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
                 specularColor: "white"
                 diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
-                ambientIntensity: 0.02
+                ambientIntensity: 0.2
                 diffuseIntensity: 1
                 specularIntensity: 0.8
                 shininess: 50.0
@@ -94,6 +102,23 @@ Window {
                 fileDialogOpenOriginal.mode = "mode1"
                 fileDialogOpenOriginal.open()
             }
+        }
+        Button {
+            id: btnCalculateStatistics
+            text: "Calculate statistics"
+            y: 30
+            onClicked: {
+                data1.command = "statistics"
+                data2.command = "statistics"
+            }
+        }
+
+        Label {
+            id: lblinfo1
+            x: 5
+            y: parent.height-30
+            color:  Qt.rgba(1,1,1,1)
+            text: data1.lblInfo
         }
 
         FileDialog {
@@ -137,36 +162,21 @@ Window {
 
     }
 
-/*    Timer {
-           property int numPoints: 0
-           interval: 10
-           repeat: true
-           running: true
-           onTriggered: {
-               var x = numPoints*Math.PI/100
-               var y = Math.sin(x)
-               dataSource.addPoint(x,y)
-               figure.xMin = 0
-               figure.xMax = 2*Math.PI
-                figure.xMax = x
-                figure.xMin = (numPoints-500)*Math.PI/100
-               numPoints++
-           }
-       }*/
        Figure {
            id: figure
            //anchors.fill: parent
            //color: "red"
            width: parent.width*0.5
-           height: parent.height*0.5
-           y: parent.height*0.5
+           height: parent.height*(1-splitWindow)
+           y: parent.height*splitWindow
            xMin: 0
-           xMax: 10
-           yMin: -1
-           yMax: 1
+           xMax: 100
+           yMin: 0
+           yMax: 1000000
+           autoBounds: true
            xLabel: "t [s] "
            yLabel: "T [K]"
-           title: "Temperature"
+           title: "Scale"
            LineGraph {
                id: graph
                dataSource: datasource1
@@ -178,7 +188,7 @@ Window {
 
     Visualizer {
         width: parent.width*0.5
-        height: parent.height
+        height: parent.height*splitWindow
 
         x: parent.width*0.5
         simulator: simulator2
@@ -406,7 +416,40 @@ Window {
                 maximumValue: 1
             }
         }
+
     }
+    Label {
+        id: lblinfo2
+        x: parent.width*0.5 + 5
+        y: parent.height - 30
+        color: Qt.rgba(1,1,1,1)
+        text: data2.lblInfo
+    }
+
+    Figure {
+        id: figure2
+        //anchors.fill: parent
+        //color: "red"
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        x: parent.width*0.5
+        xMin: 0
+        xMax: 100
+        yMin: 0
+        yMax: 100000
+        autoBounds: true
+        xLabel: "t [s] "
+        yLabel: "T [K]"
+        title: "Scale 2"
+        LineGraph {
+            id: graph2
+            dataSource: datasource2
+            width: 2
+            // style: Qt.DotLine
+        }
+    }
+
 
 
 

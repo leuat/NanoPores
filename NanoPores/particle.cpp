@@ -95,6 +95,13 @@ void Particles::copyFrom(Particles &plist)
     }
 }
 
+void Particles::getVector3DList(QVector<QVector3D>& list)
+{
+    for(Particle* p : particles)
+        list.append(p->getPos());
+
+}
+
 void Particles::save(const char* filename) {
     ofstream file;
 

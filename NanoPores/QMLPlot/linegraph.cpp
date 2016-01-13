@@ -9,6 +9,7 @@ LineGraph::LineGraph()
 LineGraph::~LineGraph()
 {
 
+
 }
 
 bool LineGraph::isInValueRange(const QPointF &point, const float &xMin, const float &xMax, const float &yMin, const float &yMax) {

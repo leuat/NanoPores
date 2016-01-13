@@ -23,6 +23,8 @@ class WorkerData : public QObject {
     Q_PROPERTY(bool enableCutting READ enableCutting WRITE setEnableCutting NOTIFY enableCuttingChanged)
     Q_PROPERTY(QString fileToOpen READ fileToOpen WRITE setFileToOpen NOTIFY fileToOpenChanged)
     Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
+    Q_PROPERTY(QString lblInfo READ lblInfo WRITE setLblInfo NOTIFY lblInfoChanged)
+    Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
 
     Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     float m_value1;
@@ -53,6 +55,10 @@ class WorkerData : public QObject {
 
 
     LineGraphDataSource* m_dataSource;
+
+    QString m_lblInfo;
+
+    QString m_command;
 
 public:
     float value1() const
@@ -113,6 +119,16 @@ public:
     LineGraphDataSource* dataSource() const
     {
         return m_dataSource;
+    }
+
+    QString lblInfo() const
+    {
+        return m_lblInfo;
+    }
+
+    QString command() const
+    {
+        return m_command;
     }
 
 public slots:
@@ -231,6 +247,24 @@ public slots:
         emit dataSourceChanged(dataSource);
     }
 
+    void setLblInfo(QString lblInfo)
+    {
+        if (m_lblInfo == lblInfo)
+            return;
+
+        m_lblInfo = lblInfo;
+        emit lblInfoChanged(lblInfo);
+    }
+
+    void setCommand(QString command)
+    {
+        if (m_command == command)
+            return;
+
+        m_command = command;
+        emit commandChanged(command);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -244,6 +278,8 @@ signals:
     void fileToOpenChanged(QString fileToOpen);
     void fileToSaveChanged(QString fileToSave);
     void dataSourceChanged(LineGraphDataSource* dataSource);
+    void lblInfoChanged(QString lblInfo);
+    void commandChanged(QString command);
 };
 
 
@@ -260,6 +296,8 @@ private:
     void AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
     void openFile();
     void saveFile();
+    void manageCommands();
+    void calculateStatistics();
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
     virtual void work();

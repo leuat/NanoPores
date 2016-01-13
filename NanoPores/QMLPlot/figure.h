@@ -16,6 +16,7 @@ class Figure : public QQuickPaintedItem
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(bool autoBounds READ autoBounds WRITE setAutoBounds NOTIFY autoBoundsChanged)
 private:
     float m_xMin = 0;
     float m_xMax = 0;
@@ -38,9 +39,12 @@ private:
     void drawText(QPointF position, QString text, QPainter *painter);
     QColor m_color = "white";
 
+    bool m_autoBounds;
+
 public:
     Figure(QQuickItem *parent = 0);
     virtual void paint(QPainter *painter);
+    void applyAutoBounds();
 
     QRectF figureRectangle() { return m_figureRectangle; }
     QPointF scaled(const QPointF &p);
@@ -59,6 +63,11 @@ public:
     QFont font() const;
     QColor color() const;
 
+    bool autoBounds() const
+    {
+        return m_autoBounds;
+    }
+
 public slots:
     void setXMin(float xMin);
     void setXMax(float xMax);
@@ -70,6 +79,15 @@ public slots:
     void setFont(QFont font);
     void setColor(QColor color);
 
+    void setAutoBounds(bool autoBounds)
+    {
+        if (m_autoBounds == autoBounds)
+            return;
+
+        m_autoBounds = autoBounds;
+        emit autoBoundsChanged(autoBounds);
+    }
+
 signals:
     void xMinChanged(float xMin);
     void xMaxChanged(float xMax);
@@ -80,6 +98,7 @@ signals:
     void titleChanged(QString title);
     void fontChanged(QFont font);
     void colorChanged(QColor color);
+    void autoBoundsChanged(bool autoBounds);
 };
 
 #endif // FIGURE_H

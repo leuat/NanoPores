@@ -2,6 +2,7 @@
 #include <QDebug>
 #include "io.h"
 #include "CSimplex.h"
+#include "distancetoatom.h"
 
 MySimulator::MySimulator()
 {
@@ -54,6 +55,45 @@ void MyWorker::saveFile()
 
 }
 
+void MyWorker::manageCommands()
+{
+    if (workerData->command()!="") {
+        if (workerData->command().toLower()=="statistics") {
+            calculateStatistics();
+        }
+    }
+    workerData->setCommand("");
+}
+
+void MyWorker::calculateStatistics()
+{
+    if (workerData==nullptr)
+        return;
+    Particles newList;
+    // First, copy particles to single list
+    if (m_particles.size()==0)
+        return;
+
+    constrainParticles(nullptr, &newList);
+    QVector<QVector3D> points;
+        newList.getVector3DList(points);
+    DistanceToAtom da(20);
+
+    da.compute(points, 30.0);
+    QVector<QPointF> hist = da.histogram(100);
+
+
+    workerData->dataSource()->SetSource(hist);
+    qDebug() << workerData->dataSource()->m_points << endl;
+
+/*
+    workerData->dataSource()->clear();
+    for (int i=0;i<100;i++)
+        workerData->dataSource()->addPoint(i, rand()%100);
+*/
+}
+
+
 void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
     if (workerData==nullptr)
         return;
@@ -95,9 +135,11 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         for (Particle* pos : m_particles.getParticles())
             AddParticleToSphere(pos, spheres, extraList);
     }
+    if (spheres != nullptr)
+    workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
 
-//      workerData->dataSource()->addPoint(workerData->dataSource()->size(), 0);
-    workerData->dataSource()->addPoint(workerData->dataSource()->size(), spheres->positions().size());
+
+ //   workerData->dataSource()->addPoint(workerData->dataSource()->size(), rand()%100);
  //   qDebug() << workerData->dataSource()->size();
 }
 
@@ -130,6 +172,8 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         workerData = mySimulator->data();
         openFile();
         saveFile();
+        manageCommands();
+
     }
 }
 

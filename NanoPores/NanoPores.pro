@@ -4,6 +4,10 @@ CONFIG += c++11
 #CONFIG -=app_bundle
 QT += qml quick widgets opengl openglextensions
 
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib -lgsl
+
+
 SOURCES += main.cpp \
     mysimulator.cpp \
     simplexnoise.cpp \
@@ -13,7 +17,8 @@ SOURCES += main.cpp \
     particle.cpp \
     QMLPlot/linegraph.cpp \
     QMLPlot/graph.cpp \
-    QMLPlot/figure.cpp
+    QMLPlot/figure.cpp \
+    distancetoatom.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +39,5 @@ HEADERS += \
     particle.h \
     QMLPlot/linegraph.h \
     QMLPlot/graph.h \
-    QMLPlot/figure.h
+    QMLPlot/figure.h \
+    distancetoatom.h

@@ -1,6 +1,7 @@
 #include "figure.h"
 #include "graph.h"
 #include <cmath>
+#include <algorithm>
 
 Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
@@ -16,6 +17,9 @@ Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 
 void Figure::paint(QPainter *painter)
 {
+
+    if (m_autoBounds)
+        applyAutoBounds();
     // Calculate how much space we need for titles etc
     float yLabelSpace = 80;
     float titleSpace = 45;
@@ -33,6 +37,27 @@ void Figure::paint(QPainter *painter)
     drawLabels(painter);
     drawGraphs(painter);
     painter->setRenderHint(QPainter::Antialiasing);
+}
+
+void Figure::applyAutoBounds()
+{
+    QList<Graph*> graphs = findChildren<Graph*>();
+    m_xMax = 1;
+    m_xMin = 0;
+    m_yMax = 1;
+    m_yMin = 0;
+
+    for(Graph *graph : graphs) {
+        m_xMax = std::max((double)m_xMax, graph->getMaxX());
+        m_xMin = std::min((double)m_xMin, graph->getMinX());
+        m_yMax = std::max((double)m_yMax, graph->getMaxY());
+        m_yMin = std::min((double)m_yMin, graph->getMinY());
+    }
+    double diff = m_yMax - m_yMin;
+    double scale = 0.3;
+    m_yMax+=diff*scale;
+    m_yMax-=diff*scale;
+
 }
 
 void Figure::drawAxis(QPainter *painter) {
