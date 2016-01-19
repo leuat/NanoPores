@@ -1,8 +1,12 @@
 #include "mysimulator.h"
 #include <QDebug>
 #include "io.h"
-#include "CSimplex.h"
 #include "distancetoatom.h"
+#include <models/noiseparameters.h>
+#include <models/multifractalparameters.h>
+
+#include <geometrylibrary.h>
+#include <noise.h>
 
 MySimulator::MySimulator()
 {
@@ -52,7 +56,6 @@ void MyWorker::saveFile()
         newList.save(url.toLocalFile().toStdString().c_str());
         workerData->setFileToSave("");
     }
-
 }
 
 void MyWorker::manageCommands()
@@ -64,6 +67,7 @@ void MyWorker::manageCommands()
     }
     workerData->setCommand("");
 }
+
 
 void MyWorker::calculateStatistics()
 {
@@ -83,8 +87,7 @@ void MyWorker::calculateStatistics()
     QVector<QPointF> hist = da.histogram(100);
 
 
-    workerData->dataSource()->SetSource(hist);
-    qDebug() << workerData->dataSource()->m_points << endl;
+    workerData->dataSource()->setPoints(hist, true);
 
 /*
     workerData->dataSource()->clear();
@@ -106,29 +109,30 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
     if (m_particles.size()==0)
         return;
 
-    CSimplex noise((int)workerData->value2(), 1, workerData->persistence(), 1253);
+    NoiseParameters np(workerData->value2(),workerData->value1(),workerData->persistence(),
+                        workerData->threshold(), workerData->invert(),123,workerData->abs());
+
+   MultiFractalParameters mfp(workerData->value2(),workerData->value1(),workerData->persistence(),
+                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
+                              2.2, 1.5, 0.75);
+
+//    cout << np;
+
+    GeometryLibrary gl;
+//    gl.Initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, &np);
+    gl.initialize(GeometryLibrary::GeometryModel::MultiFractal, Noise::Simplex, &mfp);
+//[ (Octaves, 2.67932) (Scale, 0.592571) (Persistence, 0.650796) (Threshold, 0.189121) (Inverted, 0.633623) (Seed, 123) (Absolute, 1)
     m_particles.BoundingBox();
     if (workerData->enableCutting())
     for (Particle* pos : m_particles.getParticles()) {
 
-        QVector3D p = pos->getPos()*workerData->value1()/m_particles.getBoundsSize()*10;
+        QVector3D p = pos->getPos()/m_particles.getBoundsSize()*10;
         if (!(pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
               pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
         {
 
-            float val = noise.Get(p.x(), p.y(),p.z());
-            //val = pow(val, workerData->sharpness());
-
-            if (workerData->abs()>0.5)
-                val = fabs(val);
-            if (workerData->invert()<0.5) {
-                if (val>workerData->threshold())
-                    AddParticleToSphere(pos, spheres,extraList);
-               }
-            else {
-                if (val<workerData->threshold())
-                    AddParticleToSphere(pos, spheres,extraList);
-            }
+            if (!gl.isInVoid(p))
+                AddParticleToSphere(pos, spheres,extraList);
        }
     }
     else { // Just copy
@@ -139,8 +143,6 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
     workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
 
 
- //   workerData->dataSource()->addPoint(workerData->dataSource()->size(), rand()%100);
- //   qDebug() << workerData->dataSource()->size();
 }
 
 
@@ -162,6 +164,8 @@ void MyWorker::synchronizeRenderer(Renderable *renderableObject) {
 
 MyWorker::MyWorker()
 {
+//    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz");
+
 }
 
 

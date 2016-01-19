@@ -1,3 +1,6 @@
 [submodule "SimVis"]
 	path = SimVis
 	url = git@github.com:ComputationalPhysics/SimVis.git
+[submodule "NanoPores/QMLPlot"]
+	path = NanoPores/QMLPlot
+	url = git@github.com:andeplane/QMLPlot.git

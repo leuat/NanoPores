@@ -2,17 +2,19 @@ TEMPLATE = app
 CONFIG += c++11
 
 #CONFIG -=app_bundle
-QT += qml quick widgets opengl openglextensions
+QT += qml quick widgets opengl openglextensions svg
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lgsl
 
+unix|win32: LIBS += -L$$PWD/../../build-GeometryLibrary-Desktop_Qt_5_5_1_clang_64bit-Release/ -lGeometryLibrary.1.0.0
+
+INCLUDEPATH += $$PWD/../../GeometryLibrary
+DEPENDPATH += $$PWD/../../GeometryLibrary
+
 
 SOURCES += main.cpp \
     mysimulator.cpp \
-    simplexnoise.cpp \
-    perlin.cpp \
-    CNoise.cpp \
     io.cpp \
     particle.cpp \
     QMLPlot/linegraph.cpp \

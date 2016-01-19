@@ -24,6 +24,7 @@ Window {
             id: data1
             enableCutting: false
             lblInfo: lblinfo1.text
+
             dataSource: LineGraphDataSource {
                 id: datasource1
             }
@@ -112,6 +113,15 @@ Window {
                 data2.command = "statistics"
             }
         }
+        Button {
+            id: btnDirty
+            text: "You dirty boy"
+            y: 60
+            onClicked: {
+                data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+            }
+        }
 
         Label {
             id: lblinfo1
@@ -169,11 +179,7 @@ Window {
            width: parent.width*0.5
            height: parent.height*(1-splitWindow)
            y: parent.height*splitWindow
-           xMin: 0
-           xMax: 100
-           yMin: 0
-           yMax: 1000000
-           autoBounds: true
+           fitData: true
            xLabel: "t [s] "
            yLabel: "T [K]"
            title: "Scale"
@@ -434,11 +440,7 @@ Window {
         height: parent.height*(1-splitWindow)
         y: parent.height*splitWindow
         x: parent.width*0.5
-        xMin: 0
-        xMax: 100
-        yMin: 0
-        yMax: 100000
-        autoBounds: true
+        fitData: true
         xLabel: "t [s] "
         yLabel: "T [K]"
         title: "Scale 2"
@@ -446,6 +448,13 @@ Window {
             id: graph2
             dataSource: datasource2
             width: 2
+            // style: Qt.DotLine
+        }
+        LineGraph {
+            id: graph1
+            dataSource: datasource1
+            width: 2
+            color: Qt.rgba(1,0,0,1);
             // style: Qt.DotLine
         }
     }
