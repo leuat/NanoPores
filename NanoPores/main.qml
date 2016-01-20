@@ -50,6 +50,9 @@ Window {
             }
             lblInfo: lblinfo2.text
 
+            skewScale: sliderSkewScale.value
+            skewAmplitude: sliderSkewAmp.value
+
 
         }
     }
@@ -109,7 +112,7 @@ Window {
             text: "Calculate statistics"
             y: 30
             onClicked: {
-                data1.command = "statistics"
+//                data1.command = "statistics"
                 data2.command = "statistics"
             }
         }
@@ -408,6 +411,38 @@ Window {
         }
         Row {
             x: 5
+            y: 310
+            width: parent.width
+            Label {
+                text: "SkewScale:"
+                color: "white"
+            }
+
+            Slider {
+                id: sliderSkewScale
+                value: 0.2
+                minimumValue: 0
+                maximumValue: 1.5
+            }
+        }
+        Row {
+            x: 5
+            y: 345
+            width: parent.width
+            Label {
+                text: "SkewAmp:"
+                color: "white"
+            }
+
+            Slider {
+                id: sliderSkewAmp
+                value: 0.2
+                minimumValue: 0
+                maximumValue: 0.6
+            }
+        }
+        Row {
+            x: 5
             y: 275
             width: parent.width
             Label {
@@ -458,6 +493,7 @@ Window {
             // style: Qt.DotLine
         }
     }
+
 
 
 

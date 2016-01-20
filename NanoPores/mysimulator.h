@@ -9,6 +9,7 @@
 #include <QMap>
 #include "particle.h"
 #include "QMLPlot/linegraph.h"
+
 class WorkerData : public QObject {
     Q_OBJECT
 
@@ -20,6 +21,8 @@ class WorkerData : public QObject {
     Q_PROPERTY(float sharpness READ sharpness WRITE setSharpness NOTIFY sharpnessChanged)
     Q_PROPERTY(float abs READ abs WRITE setAbs NOTIFY absChanged)
     Q_PROPERTY(float invert READ invert WRITE setInvert NOTIFY invertChanged)
+    Q_PROPERTY(float skewScale READ skewScale WRITE setSkewScale NOTIFY skewScaleChanged)
+    Q_PROPERTY(float skewAmplitude READ skewAmplitude WRITE setSkewAmplitude NOTIFY skewAmplitudeChanged)
     Q_PROPERTY(bool enableCutting READ enableCutting WRITE setEnableCutting NOTIFY enableCuttingChanged)
     Q_PROPERTY(QString fileToOpen READ fileToOpen WRITE setFileToOpen NOTIFY fileToOpenChanged)
     Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
@@ -59,6 +62,10 @@ class WorkerData : public QObject {
     QString m_lblInfo;
 
     QString m_command;
+
+    float m_skewScale;
+
+    float m_skewAmplitude;
 
 public:
     float value1() const
@@ -129,6 +136,16 @@ public:
     QString command() const
     {
         return m_command;
+    }
+
+    float skewScale() const
+    {
+        return m_skewScale;
+    }
+
+    float skewAmplitude() const
+    {
+        return m_skewAmplitude;
     }
 
 public slots:
@@ -265,6 +282,24 @@ public slots:
         emit commandChanged(command);
     }
 
+    void setSkewScale(float skewScale)
+    {
+        if (m_skewScale == skewScale)
+            return;
+
+        m_skewScale = skewScale;
+        emit skewScaleChanged(skewScale);
+    }
+
+    void setSkewAmplitude(float skewAmplitude)
+    {
+        if (m_skewAmplitude == skewAmplitude)
+            return;
+
+        m_skewAmplitude = skewAmplitude;
+        emit skewAmplitudeChanged(skewAmplitude);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -280,6 +315,8 @@ signals:
     void dataSourceChanged(LineGraphDataSource* dataSource);
     void lblInfoChanged(QString lblInfo);
     void commandChanged(QString command);
+    void skewScaleChanged(float skewScale);
+    void skewAmplitudeChanged(float skewAmplitude);
 };
 
 

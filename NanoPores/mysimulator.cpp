@@ -80,7 +80,7 @@ void MyWorker::calculateStatistics()
 
     constrainParticles(nullptr, &newList);
     QVector<QVector3D> points;
-        newList.getVector3DList(points);
+    newList.getVector3DList(points);
     DistanceToAtom da(20);
 
     da.compute(points, 30.0);
@@ -106,11 +106,17 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         spheres->scales().clear();
         spheres->positions().clear();
     }
-    if (m_particles.size()==0)
+   if (m_particles.size()==0)
         return;
 
+//    workerData->setSkewScale(1);
+//    workerData->setSkewAmplitude(1);
+
     NoiseParameters np(workerData->value2(),workerData->value1(),workerData->persistence(),
-                        workerData->threshold(), workerData->invert(),123,workerData->abs());
+                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
+                       workerData->skewScale(), workerData->skewAmplitude());
+
+//    qDebug() << workerData->skewScale() << " what " << workerData->value2();
 
    MultiFractalParameters mfp(workerData->value2(),workerData->value1(),workerData->persistence(),
                         workerData->threshold(), workerData->invert(),123,workerData->abs(),
@@ -119,8 +125,8 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
 //    cout << np;
 
     GeometryLibrary gl;
-//    gl.Initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, &np);
-    gl.initialize(GeometryLibrary::GeometryModel::MultiFractal, Noise::Simplex, &mfp);
+    gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, &np);
+//    gl.initialize(GeometryLibrary::GeometryModel::MultiFractal, Noise::Simplex, &mfp);
 //[ (Octaves, 2.67932) (Scale, 0.592571) (Persistence, 0.650796) (Threshold, 0.189121) (Inverted, 0.633623) (Seed, 123) (Absolute, 1)
     m_particles.BoundingBox();
     if (workerData->enableCutting())

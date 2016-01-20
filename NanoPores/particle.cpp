@@ -64,7 +64,6 @@ void Particles::open(const char *filename) {
               QStringList lst = line.split(" ");
               if (lst.size()!=4)
                   continue;
-//              qDebug() << lst[0];
               ParticleType pt = ParticleTypes::getInstance().getMap()[lst[0]];
               QVector3D pos(lst[1].toFloat(),lst[2].toFloat(),lst[3].toFloat());
               Particle* p = new Particle();
@@ -78,7 +77,6 @@ void Particles::open(const char *filename) {
           cnt++;
 
        }
-//        qDebug()<< "DONE loading " << particles.size();
        inputFile.close();
     }
 

@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     QMLPlot/linegraph.cpp \
     QMLPlot/graph.cpp \
     QMLPlot/figure.cpp \
-    distancetoatom.cpp
+    distancetoatom.cpp \
+    dtalikelihood.cpp
 
 RESOURCES += qml.qrc
 
@@ -42,4 +43,5 @@ HEADERS += \
     QMLPlot/linegraph.h \
     QMLPlot/graph.h \
     QMLPlot/figure.h \
-    distancetoatom.h
+    distancetoatom.h \
+    dtalikelihood.h
