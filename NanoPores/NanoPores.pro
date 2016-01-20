@@ -7,12 +7,6 @@ QT += qml quick widgets opengl openglextensions svg
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lgsl
 
-unix|win32: LIBS += -L$$PWD/../../build-GeometryLibrary-Desktop_Qt_5_5_1_clang_64bit-Release/ -lGeometryLibrary.1.0.0
-
-INCLUDEPATH += $$PWD/../../GeometryLibrary
-DEPENDPATH += $$PWD/../../GeometryLibrary
-
-
 SOURCES += main.cpp \
     mysimulator.cpp \
     io.cpp \
@@ -21,7 +15,21 @@ SOURCES += main.cpp \
     QMLPlot/graph.cpp \
     QMLPlot/figure.cpp \
     distancetoatom.cpp \
-    dtalikelihood.cpp
+    dtalikelihood.cpp \
+    GeometryLibrary/likelihood/lgraph.cpp \
+    GeometryLibrary/likelihood/likelihood.cpp \
+    GeometryLibrary/misc/util.cpp \
+    GeometryLibrary/models/model.cpp \
+    GeometryLibrary/models/multifractalmodel.cpp \
+    GeometryLibrary/models/multifractalparameters.cpp \
+    GeometryLibrary/models/noiseparameters.cpp \
+    GeometryLibrary/models/parameters.cpp \
+    GeometryLibrary/models/regularmodel.cpp \
+    GeometryLibrary/geometrylibrary.cpp \
+    GeometryLibrary/noise.cpp \
+    GeometryLibrary/perlin.cpp \
+    GeometryLibrary/simplex.cpp \
+    GeometryLibrary/simplexnoise.cpp
 
 RESOURCES += qml.qrc
 
@@ -44,4 +52,20 @@ HEADERS += \
     QMLPlot/graph.h \
     QMLPlot/figure.h \
     distancetoatom.h \
-    dtalikelihood.h
+    dtalikelihood.h \
+    GeometryLibrary/likelihood/lgraph.h \
+    GeometryLibrary/likelihood/likelihood.h \
+    GeometryLibrary/likelihood/spline.h \
+    GeometryLibrary/misc/util.h \
+    GeometryLibrary/models/model.h \
+    GeometryLibrary/models/multifractalmodel.h \
+    GeometryLibrary/models/multifractalparameters.h \
+    GeometryLibrary/models/noiseparameters.h \
+    GeometryLibrary/models/parameters.h \
+    GeometryLibrary/models/regularmodel.h \
+    GeometryLibrary/geometrylibrary.h \
+    GeometryLibrary/geometrylibrary_global.h \
+    GeometryLibrary/noise.h \
+    GeometryLibrary/perlin.h \
+    GeometryLibrary/simplex.h \
+    GeometryLibrary/simplexnoise.h

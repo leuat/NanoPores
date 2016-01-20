@@ -1,6 +1,6 @@
 #include "dtalikelihood.h"
-#include <geometrylibrary.h>
-#include <noise.h>
+#include "GeometryLibrary/geometrylibrary.h"
+#include "GeometryLibrary/noise.h"
 
 QVector<QPointF> DTALikelihood::currentModel() const
 {

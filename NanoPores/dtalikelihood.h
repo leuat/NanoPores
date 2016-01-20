@@ -1,9 +1,9 @@
 #ifndef DTALIKELIHOOD_H
 #define DTALIKELIHOOD_H
 
-#include <likelihood/likelihood.h>
-#include <particle.h>
-#include <distancetoatom.h>
+#include "GeometryLibrary/likelihood/likelihood.h"
+#include "particle.h"
+#include "distancetoatom.h"
 #include <QVector>
 #include <QVector3D>
 

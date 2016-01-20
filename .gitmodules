@@ -4,3 +4,6 @@
 [submodule "NanoPores/QMLPlot"]
 	path = NanoPores/QMLPlot
 	url = git@github.com:andeplane/QMLPlot.git
+[submodule "NanoPores/GeometryLibrary"]
+	path = NanoPores/GeometryLibrary
+	url = git@github.com:leuat/GeometryLibrary.git

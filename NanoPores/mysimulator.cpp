@@ -2,11 +2,11 @@
 #include <QDebug>
 #include "io.h"
 #include "distancetoatom.h"
-#include <models/noiseparameters.h>
-#include <models/multifractalparameters.h>
+#include "GeometryLibrary/models/noiseparameters.h"
+#include "GeometryLibrary/models/multifractalparameters.h"
 
-#include <geometrylibrary.h>
-#include <noise.h>
+#include "GeometryLibrary/geometrylibrary.h"
+#include "GeometryLibrary/noise.h"
 
 MySimulator::MySimulator()
 {
