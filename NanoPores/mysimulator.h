@@ -30,46 +30,29 @@ class WorkerData : public QObject {
     Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
     Q_PROPERTY(QString lblInfo READ lblInfo WRITE setLblInfo NOTIFY lblInfoChanged)
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
+    Q_PROPERTY(NoiseParameters* noiseParameters READ noiseParameters WRITE setNoiseParameters NOTIFY noiseParametersChanged)
 
     Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     Q_PROPERTY(LineGraphDataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
     Q_PROPERTY(LineGraphDataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
     float m_value1;
-
     float m_value2;
-
     float m_threshold;
-
     float m_slice;
-
     bool initialized = false;
-
     float m_persistence;
-
     float m_sharpness;
-
     float m_abs;
-
     float m_invert;
-
-
-
     bool m_enableCutting;
-
     QString m_fileToOpen;
-
     QString m_fileToSave;
-
-
     LineGraphDataSource* m_dataSource;
-
     QString m_lblInfo;
-
     QString m_command;
-
     float m_skewScale;
-
     float m_skewAmplitude;
+    NoiseParameters* m_noiseParameters;
 
     LineGraphDataSource* m_dataSource2;
 
@@ -164,6 +147,10 @@ public:
     LineGraphDataSource* dataSource3() const
     {
         return m_dataSource3;
+  }
+    NoiseParameters* noiseParameters() const
+    {
+        return m_noiseParameters;
     }
 
 public slots:
@@ -335,6 +322,14 @@ public slots:
         m_dataSource3 = dataSource3;
         emit dataSource3Changed(dataSource3);
     }
+    void setNoiseParameters(NoiseParameters* noiseParameters)
+    {
+        if (m_noiseParameters == noiseParameters)
+            return;
+
+        m_noiseParameters = noiseParameters;
+        emit noiseParametersChanged(noiseParameters);
+    }
 
 signals:
     void value1Changed(float value1);
@@ -355,6 +350,7 @@ signals:
     void skewAmplitudeChanged(float skewAmplitude);
     void dataSource2Changed(LineGraphDataSource* dataSource2);
     void dataSource3Changed(LineGraphDataSource* dataSource3);
+    void noiseParametersChanged(NoiseParameters* noiseParameters);
 };
 
 

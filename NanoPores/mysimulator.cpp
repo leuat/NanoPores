@@ -1,5 +1,6 @@
 #include "mysimulator.h"
 #include <QDebug>
+#include <iostream>
 #include "io.h"
 #include "distancetoatom.h"
 #include "GeometryLibrary/models/noiseparameters.h"
@@ -7,6 +8,7 @@
 
 #include "GeometryLibrary/geometrylibrary.h"
 #include "GeometryLibrary/noise.h"
+using namespace std;
 
 MySimulator::MySimulator()
 {
@@ -71,15 +73,8 @@ void MyWorker::manageCommands()
                 workerData->setCommand("");
                 return;
             }
-            if (m_params!=nullptr)
-                delete m_params;
-
-            m_params = new NoiseParameters(workerData->value2(),workerData->value1(),workerData->persistence(),
-                                workerData->threshold(), workerData->invert(),123,workerData->abs(),
-                               workerData->skewScale(), workerData->skewAmplitude());
-
-
-            m_likelihood.BruteForce1D(10, m_params->getParam("scale"), m_params);
+            Parameters* p = workerData->noiseParameters();
+            m_likelihood.BruteForce1D(10, p->getParameter("scale"), p);
         }
         if (cmd[0]=="loaddata") {
             QUrl url = cmd[1];
@@ -138,44 +133,34 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
    if (m_particles.size()==0)
         return;
 
-//    workerData->setSkewScale(1);
-//    workerData->setSkewAmplitude(1);
+    NoiseParameters *np = workerData->noiseParameters();
 
-    NoiseParameters np(workerData->value2(),workerData->value1(),workerData->persistence(),
-                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
-                       workerData->skewScale(), workerData->skewAmplitude());
+    if(!np) {
+        return;
+    }
 
-//    qDebug() << workerData->skewScale() << " what " << workerData->value2();
+    if (workerData->enableCutting()) {
+        GeometryLibrary gl;
+        gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, np);
+        m_particles.BoundingBox();
+        for (Particle* pos : m_particles.getParticles()) {
 
-/*   MultiFractalParameters mfp(workerData->value2(),workerData->value1(),workerData->persistence(),
-                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
-                              2.2, 1.5, 0.75);
-*/
-//    cout << np;
+            QVector3D p = pos->getPos()/m_particles.getBoundsSize()*10;
+            if (!(pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
+                  pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
+            {
 
-    GeometryLibrary gl;
-    gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, &np);
-//    gl.initialize(GeometryLibrary::GeometryModel::MultiFractal, Noise::Simplex, &mfp);
-//[ (Octaves, 2.67932) (Scale, 0.592571) (Persistence, 0.650796) (Threshold, 0.189121) (Inverted, 0.633623) (Seed, 123) (Absolute, 1)
-    m_particles.BoundingBox();
-    if (workerData->enableCutting())
-    for (Particle* pos : m_particles.getParticles()) {
-
-        QVector3D p = pos->getPos()/m_particles.getBoundsSize()*10;
-        if (!(pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
-              pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
-        {
-
-            if (!gl.isInVoid(p))
-                AddParticleToSphere(pos, spheres,extraList);
-       }
+                if (!gl.isInVoid(p))
+                    AddParticleToSphere(pos, spheres,extraList);
+            }
+        }
     }
     else { // Just copy
         for (Particle* pos : m_particles.getParticles())
             AddParticleToSphere(pos, spheres, extraList);
     }
     if (spheres != nullptr)
-    workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
+        workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
 
 
 }
@@ -212,7 +197,6 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         openFile();
         saveFile();
         manageCommands();
-
     }
 }
 

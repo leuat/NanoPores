@@ -7,8 +7,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.0
 import Qt.labs.settings 1.0
 import QMLPlot 1.0
-
-
+import GeometryLibrary 1.0
 
 Window {
     visible: true
@@ -24,8 +23,6 @@ Window {
             id: data1
             enableCutting: false
             lblInfo: lblinfo1.text
-
-
         }
     }
 
@@ -33,14 +30,8 @@ Window {
         id: simulator2
         data: WorkerData{
             id: data2
-            threshold: sliderThreshold.value
-            value1: sliderScale.value
-            value2: sliderOctaves.value
-            persistence: sliderPersistence.value
             slice: sliderSlice.value
             sharpness: sliderSharpness.value
-            abs: sliderAbs.value
-            invert: sliderInvert.value
             enableCutting: true
 
             dataSource: dataSource1
@@ -49,15 +40,11 @@ Window {
 
             lblInfo: lblinfo2.text
 
-            skewScale: sliderSkewScale.value
-            skewAmplitude: sliderSkewAmp.value
-
-
+            noiseParameters: NoiseParameters {
+                id: noiseParameters
+           }
         }
     }
-
-
-
 
     Visualizer {
   //      anchors.fill: parent
@@ -81,7 +68,6 @@ Window {
             visible: true
             color: "white"
             scale: sliderSize.value
-
 
             Light {
                 id: light1
@@ -111,7 +97,6 @@ Window {
             text: "Calculate statistics"
             y: 30
             onClicked: {
-//                data1.command = "statistics"
                 data2.command = "statistics"
             }
         }
@@ -141,16 +126,17 @@ Window {
             text: data1.lblInfo
         }
 
+        Settings {
+            property alias lastOpenedFolderOriginal: fileDialogOpenOriginal.folder
+            property alias lastOpenedFolderSave: fileDialogSave.folder
+        }
+
         FileDialog {
             id: fileDialogOpenOriginal
 
             property string mode
             title: "Please choose a file"
-            //folder: shortcuts.home
-            /*Settings {
-                property alias url: fileDialogOpenOriginal.folder
-            }
-*/
+
             onAccepted: {
                 if (mode=="mode1")
                     data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
@@ -160,9 +146,6 @@ Window {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
                 }
             }
-            onRejected: {
-            }
-            Component.onCompleted: visible = false
         }
 
         FileDialog {
@@ -170,31 +153,22 @@ Window {
             selectExisting : false
              property string mode
             title: "Please choose a location to save"
-            //folder: shortcuts.home
-            /*Settings {
-                property alias url: fileDialogOpenOriginal.folder
-            }
-*/
+
             onAccepted: {
                 data2.fileToSave = fileDialogSave.fileUrls.toString();
             }
-            onRejected: {
-            }
-            Component.onCompleted: visible = false
         }
 
     }
 
        Figure {
            id: figure
-           //anchors.fill: parent
-           //color: "red"
            width: parent.width*0.5
            height: parent.height*(1-splitWindow)
            y: parent.height*splitWindow
            fitData: true
-           xLabel: "t [s] "
-           yLabel: "T [K]"
+           xLabel: "d [Å] "
+           yLabel: "P(d)"
            title: "Scale"
            LineGraph {
                id: graph1
@@ -218,12 +192,6 @@ Window {
         }
         backgroundColor: "black"
 
-        /*        SkyBox {
-            id: skybox
-            camera: camera
-            texture: ":/cubemap.jpg"
-        }
-*/
         TrackballNavigator {
             id: navigator2
             anchors.fill: parent
@@ -248,19 +216,6 @@ Window {
                 shininess: 50.0
                 attenuation: 0.2
                 position: camera2.position
-            }
-
-            /*            SkyBoxReflection {
-                id: reflection
-                skybox: skybox
-                reflectivity: 0.2
-            }
-*/
-            SimplexBump {
-                id: simplexBump
-                enabled: false
-                intensity: 0.1
-                scale: 1.0
             }
         }
     }
@@ -294,193 +249,62 @@ Window {
         }
     }
 
-    Rectangle {
+    ParametersGUI {
         width: 200
         height: 400
         y: 90;
         x: parent.width*0.5
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
+        textColor: "white"
+        labelWidth: 100
+        parameters: noiseParameters
+        additional: [
+            Row {
+                width: parent.width
+                Label {
+                    text: "Size:"
+                    color: "white"
+                }
 
-        Row {
-            x: 5
-            y: 5
-            width: parent.width
+                Slider {
+                    id: sliderSize
+                    value: 0.05
+                    minimumValue: 0
+                    maximumValue: 0.5
+                }
+            },
+            Row {
+                width: parent.width
+                Label {
+                    text: "Slice:"
+                    color: "white"
+                }
 
-            Label {
-                text: "Threshold:"
-                color: "white"
-            }
+                Slider {
+                    id: sliderSlice
+                    value: 1
+                    minimumValue: 0
+                    maximumValue: 1
+                }
+            },
+            Row {
+                width: parent.width
+                Label {
+                    text: "Translate:"
+                    color: "white"
+                }
 
-            Slider {
-                id: sliderThreshold
-                value: 0.5
-                minimumValue: -1
-                maximumValue: 1
+                Slider {
+                    id: sliderSharpness
+                    value: 0
+                    minimumValue: -1
+                    maximumValue: 1
+                }
             }
-        }
-        Row {
-            x: 5
-            y: 40
-            width: parent.width
-            Label {
-                text: "Scale:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderScale
-                value: 1
-                minimumValue: 0
-                maximumValue: 4
-            }
-        }
-        Row {
-            x: 5
-            y: 75
-            width: parent.width
-            Label {
-                text: "Octaves:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderOctaves
-                value: 1
-                minimumValue: 1
-                maximumValue: 8
-            }
-        }
-        Row {
-            x: 5
-            y: 110
-            width: parent.width
-            Label {
-                text: "Size:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderSize
-                value: 0.05
-                minimumValue: 0
-                maximumValue: 0.5
-            }
-        }
-        Row {
-            x: 5
-            y: 145
-            width: parent.width
-            Label {
-                text: "Slice:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderSlice
-                value: 1
-                minimumValue: 0
-                maximumValue: 1
-            }
-        }
-        Row {
-            x: 5
-            y: 180
-            width: parent.width
-            Label {
-                text: "Persistence:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderPersistence
-                value: 1
-                minimumValue: 0
-                maximumValue: 2
-            }
-        }
-        Row {
-            x: 5
-            y: 215
-            width: parent.width
-            Label {
-                text: "Translate:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderSharpness
-                value: 0
-                minimumValue: -1
-                maximumValue: 1
-            }
-        }
-        Row {
-            x: 5
-            y: 240
-            width: parent.width
-            Label {
-                text: "Abs:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderAbs
-                value: 1
-                minimumValue: 0
-                maximumValue: 1
-            }
-        }
-        Row {
-            x: 5
-            y: 310
-            width: parent.width
-            Label {
-                text: "SkewScale:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderSkewScale
-                value: 0.2
-                minimumValue: 0
-                maximumValue: 1.5
-            }
-        }
-        Row {
-            x: 5
-            y: 345
-            width: parent.width
-            Label {
-                text: "SkewAmp:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderSkewAmp
-                value: 0.2
-                minimumValue: 0
-                maximumValue: 0.6
-            }
-        }
-        Row {
-            x: 5
-            y: 275
-            width: parent.width
-            Label {
-                text: "Invert:"
-                color: "white"
-            }
-
-            Slider {
-                id: sliderInvert
-                value: 0
-                minimumValue: 0
-                maximumValue: 1
-            }
-        }
-
+        ]
     }
+
     Label {
         id: lblinfo2
         x: parent.width*0.5 + 5
@@ -498,9 +322,9 @@ Window {
         y: parent.height*splitWindow
         x: parent.width*0.5
         fitData: true
-        xLabel: "t [s] "
-        yLabel: "T [K]"
-        title: "Scale 2"
+        xLabel: "d [Å]"
+        yLabel: "P(d)"
+        title: ""
         LineGraph {
             id: graph2
             dataSource: LineGraphDataSource {
