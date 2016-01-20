@@ -9,6 +9,8 @@
 #include <QMap>
 #include "particle.h"
 #include "QMLPlot/linegraph.h"
+#include "dtalikelihood.h"
+#include "GeometryLibrary/models/noiseparameters.h"
 
 class WorkerData : public QObject {
     Q_OBJECT
@@ -30,6 +32,8 @@ class WorkerData : public QObject {
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
 
     Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
+    Q_PROPERTY(LineGraphDataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
+    Q_PROPERTY(LineGraphDataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
     float m_value1;
 
     float m_value2;
@@ -66,6 +70,10 @@ class WorkerData : public QObject {
     float m_skewScale;
 
     float m_skewAmplitude;
+
+    LineGraphDataSource* m_dataSource2;
+
+    LineGraphDataSource* m_dataSource3;
 
 public:
     float value1() const
@@ -146,6 +154,16 @@ public:
     float skewAmplitude() const
     {
         return m_skewAmplitude;
+    }
+
+    LineGraphDataSource* dataSource2() const
+    {
+        return m_dataSource2;
+    }
+
+    LineGraphDataSource* dataSource3() const
+    {
+        return m_dataSource3;
     }
 
 public slots:
@@ -300,6 +318,24 @@ public slots:
         emit skewAmplitudeChanged(skewAmplitude);
     }
 
+    void setDataSource2(LineGraphDataSource* dataSource2)
+    {
+        if (m_dataSource2 == dataSource2)
+            return;
+
+        m_dataSource2 = dataSource2;
+        emit dataSource2Changed(dataSource2);
+    }
+
+    void setDataSource3(LineGraphDataSource* dataSource3)
+    {
+        if (m_dataSource3 == dataSource3)
+            return;
+
+        m_dataSource3 = dataSource3;
+        emit dataSource3Changed(dataSource3);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -317,6 +353,8 @@ signals:
     void commandChanged(QString command);
     void skewScaleChanged(float skewScale);
     void skewAmplitudeChanged(float skewAmplitude);
+    void dataSource2Changed(LineGraphDataSource* dataSource2);
+    void dataSource3Changed(LineGraphDataSource* dataSource3);
 };
 
 
@@ -327,7 +365,11 @@ class MyWorker : public SimulatorWorker
 private:
     WorkerData* workerData;
     Particles m_particles;
+    Particles m_dataParticles;
     Spheres m_spheres;
+    DTALikelihood m_likelihood;
+    NoiseParameters* m_params = nullptr;
+
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
     void AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);

@@ -61,11 +61,40 @@ void MyWorker::saveFile()
 void MyWorker::manageCommands()
 {
     if (workerData->command()!="") {
-        if (workerData->command().toLower()=="statistics") {
-            calculateStatistics();
+        QStringList cmd = workerData->command().toLower().split(" ");
+        if (cmd[0]=="statistics") {
+            qDebug() << "Starting analysis";
+            //calculateStatistics();
+            m_likelihood.setOriginalInput(&m_particles);
+            if (m_dataParticles.size()==0) {
+                qDebug() << "ZERO particles in data input!";
+                workerData->setCommand("");
+                return;
+            }
+            if (m_params!=nullptr)
+                delete m_params;
+
+            m_params = new NoiseParameters(workerData->value2(),workerData->value1(),workerData->persistence(),
+                                workerData->threshold(), workerData->invert(),123,workerData->abs(),
+                               workerData->skewScale(), workerData->skewAmplitude());
+
+
+            m_likelihood.BruteForce1D(10, m_params->getParam("scale"), m_params);
+        }
+        if (cmd[0]=="loaddata") {
+            QUrl url = cmd[1];
+            m_dataParticles.open(url.toLocalFile().toStdString().c_str());
+            m_likelihood.setDataInput(&m_dataParticles);
         }
     }
     workerData->setCommand("");
+
+    if (m_likelihood.Tick()) {
+        workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
+        workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
+        workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+
+    }
 }
 
 
@@ -118,10 +147,10 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
 
 //    qDebug() << workerData->skewScale() << " what " << workerData->value2();
 
-   MultiFractalParameters mfp(workerData->value2(),workerData->value1(),workerData->persistence(),
+/*   MultiFractalParameters mfp(workerData->value2(),workerData->value1(),workerData->persistence(),
                         workerData->threshold(), workerData->invert(),123,workerData->abs(),
                               2.2, 1.5, 0.75);
-
+*/
 //    cout << np;
 
     GeometryLibrary gl;

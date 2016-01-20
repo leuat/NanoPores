@@ -10,8 +10,6 @@
 class DTALikelihood: public Likelihood
 {
 private:
-    QVector<QPointF> m_currentModel;
-    QVector<QPointF> m_currentData;
     QVector<QVector3D> m_modelParticles;
     Particles* m_originalParticles;
     QVector<QVector3D> m_dataParticles;
@@ -22,7 +20,7 @@ public:
     void setDataInput(Particles* dataParticles) {
         dataParticles->getVector3DList(m_dataParticles);
         calculateStatistics(m_dataParticles, m_data);
-        m_currentData = m_data.toQVector();
+//        m_currentData = m_data.toQVector();
 
     }
     void setOriginalInput(Particles* originalParticles) {

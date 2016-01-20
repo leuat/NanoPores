@@ -25,9 +25,6 @@ Window {
             enableCutting: false
             lblInfo: lblinfo1.text
 
-            dataSource: LineGraphDataSource {
-                id: datasource1
-            }
 
         }
     }
@@ -45,9 +42,11 @@ Window {
             abs: sliderAbs.value
             invert: sliderInvert.value
             enableCutting: true
-            dataSource: LineGraphDataSource {
-                id: datasource2
-            }
+
+            dataSource: dataSource1
+            dataSource2: dataSource2
+            dataSource3: dataSource3
+
             lblInfo: lblinfo2.text
 
             skewScale: sliderSkewScale.value
@@ -125,6 +124,14 @@ Window {
                 data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
             }
         }
+        Button {
+            id: btnDirty2
+            text: "You dirty girl"
+            y: 90
+            onClicked: {
+                data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+            }
+        }
 
         Label {
             id: lblinfo1
@@ -149,6 +156,9 @@ Window {
                     data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
                 if (mode=="mode2")
                     data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                if (mode=="mode3") {
+                    data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
+                }
             }
             onRejected: {
             }
@@ -187,8 +197,10 @@ Window {
            yLabel: "T [K]"
            title: "Scale"
            LineGraph {
-               id: graph
-               dataSource: datasource1
+               id: graph1
+               dataSource: LineGraphDataSource {
+                   id: dataSource1
+               }
                width: 2
                // style: Qt.DotLine
            }
@@ -264,7 +276,17 @@ Window {
     }
     Button {
         x: parent.width*0.5
-        y: 25
+        y: 30
+        id: btnOpen3
+        text: "Open data"
+        onClicked: {
+            fileDialogOpenOriginal.mode = "mode3"
+            fileDialogOpenOriginal.open()
+        }
+    }
+    Button {
+        x: parent.width*0.5
+        y: 60
         id: btnSave
         text: "Save"
         onClicked: {
@@ -275,7 +297,7 @@ Window {
     Rectangle {
         width: 200
         height: 400
-        y: 50;
+        y: 90;
         x: parent.width*0.5
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
@@ -481,13 +503,17 @@ Window {
         title: "Scale 2"
         LineGraph {
             id: graph2
-            dataSource: datasource2
+            dataSource: LineGraphDataSource {
+                id: dataSource2
+            }
             width: 2
             // style: Qt.DotLine
         }
         LineGraph {
-            id: graph1
-            dataSource: datasource1
+            id: graph3
+            dataSource: LineGraphDataSource {
+                id: dataSource3
+            }
             width: 2
             color: Qt.rgba(1,0,0,1);
             // style: Qt.DotLine
