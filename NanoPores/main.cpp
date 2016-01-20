@@ -4,7 +4,7 @@
 #include "mysimulator.h"
 #include "QMLPlot/figure.h"
 #include "QMLPlot/linegraph.h"
-
+#include "GeometryLibrary/models/noiseparameters.h"
 int main(int argc, char *argv[])
 {
     qmlRegisterType<MySimulator>("MySimulator", 1, 0, "MySimulator");
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Figure>("QMLPlot", 1,0,"Figure");
     qmlRegisterType<LineGraph>("QMLPlot", 1,0,"LineGraph");
     qmlRegisterType<LineGraphDataSource>("QMLPlot", 1,0,"LineGraphDataSource");
-
+    qmlRegisterType<NoiseParameters>("GeometryLibrary",1,0,"NoiseParameters");
 
     QGuiApplication app(argc, argv);
 

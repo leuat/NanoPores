@@ -9,7 +9,7 @@
 #include <QMap>
 #include "particle.h"
 #include "QMLPlot/linegraph.h"
-
+#include "GeometryLibrary/models/noiseparameters.h"
 class WorkerData : public QObject {
     Q_OBJECT
 
@@ -28,44 +28,27 @@ class WorkerData : public QObject {
     Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
     Q_PROPERTY(QString lblInfo READ lblInfo WRITE setLblInfo NOTIFY lblInfoChanged)
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
+    Q_PROPERTY(NoiseParameters* noiseParameters READ noiseParameters WRITE setNoiseParameters NOTIFY noiseParametersChanged)
 
     Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     float m_value1;
-
     float m_value2;
-
     float m_threshold;
-
     float m_slice;
-
     bool initialized = false;
-
     float m_persistence;
-
     float m_sharpness;
-
     float m_abs;
-
     float m_invert;
-
-
-
     bool m_enableCutting;
-
     QString m_fileToOpen;
-
     QString m_fileToSave;
-
-
     LineGraphDataSource* m_dataSource;
-
     QString m_lblInfo;
-
     QString m_command;
-
     float m_skewScale;
-
     float m_skewAmplitude;
+    NoiseParameters* m_noiseParameters;
 
 public:
     float value1() const
@@ -146,6 +129,11 @@ public:
     float skewAmplitude() const
     {
         return m_skewAmplitude;
+    }
+
+    NoiseParameters* noiseParameters() const
+    {
+        return m_noiseParameters;
     }
 
 public slots:
@@ -300,6 +288,15 @@ public slots:
         emit skewAmplitudeChanged(skewAmplitude);
     }
 
+    void setNoiseParameters(NoiseParameters* noiseParameters)
+    {
+        if (m_noiseParameters == noiseParameters)
+            return;
+
+        m_noiseParameters = noiseParameters;
+        emit noiseParametersChanged(noiseParameters);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -317,6 +314,7 @@ signals:
     void commandChanged(QString command);
     void skewScaleChanged(float skewScale);
     void skewAmplitudeChanged(float skewAmplitude);
+    void noiseParametersChanged(NoiseParameters* noiseParameters);
 };
 
 

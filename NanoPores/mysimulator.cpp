@@ -112,9 +112,10 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
 //    workerData->setSkewScale(1);
 //    workerData->setSkewAmplitude(1);
 
-    NoiseParameters np(workerData->value2(),workerData->value1(),workerData->persistence(),
-                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
-                       workerData->skewScale(), workerData->skewAmplitude());
+    NoiseParameters &np = *workerData->noiseParameters();
+//    NoiseParameters np(workerData->value2(),workerData->value1(),workerData->persistence(),
+//                        workerData->threshold(), workerData->invert(),123,workerData->abs(),
+//                       workerData->skewScale(), workerData->skewAmplitude());
 
 //    qDebug() << workerData->skewScale() << " what " << workerData->value2();
 
