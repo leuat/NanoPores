@@ -51,6 +51,7 @@ QVector<Particle *>& Particles::getParticles()
 void Particles::open(const char *filename) {
     particles.clear();
     QFile inputFile(filename);
+    int line = 0;
     if (inputFile.open(QIODevice::ReadOnly))
     {
        QTextStream in(&inputFile);
@@ -79,6 +80,7 @@ void Particles::open(const char *filename) {
        inputFile.close();
     }
 
+    qDebug() << "HORE";
 }
 
 void Particles::copyFrom(Particles &plist)

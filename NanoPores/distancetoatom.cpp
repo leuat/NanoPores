@@ -48,71 +48,140 @@ CellList DistanceToAtom::buildCellList(const QVector<QVector3D> &points, float s
 void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cutoff)
 {
     if(pointsOriginal.size() == 0) {
-        qDebug() << "DistanceToAtom::compute WARNING: input vector is empty.";
-        return;
-    }
+            qDebug() << "DistanceToAtom::compute WARNING: input vector is empty.";
+            return;
+        }
 
-    float min = 1e90;
-    float max = -1e90;
-    for(const QVector3D &point : pointsOriginal) {
-        min = std::min(min, point[0]);
-        min = std::min(min, point[1]);
-        min = std::min(min, point[2]);
+        float min = 1e90;
+        float max = -1e90;
+        for(const QVector3D &point : pointsOriginal) {
+            min = std::min(min, point[0]);
+            min = std::min(min, point[1]);
+            min = std::min(min, point[2]);
 
-        max = std::max(max, point[0]);
-        max = std::max(max, point[1]);
-        max = std::max(max, point[2]);
-    }
-    max += 1e-5;
-    const float systemSize = max - min;
+            max = std::max(max, point[0]);
+            max = std::max(max, point[1]);
+            max = std::max(max, point[2]);
+        }
+        max += 1e-5;
+        const float systemSize = max - min;
 
-    // Now translate all points
-    QVector<QVector3D> points = pointsOriginal;
-    for(QVector3D &point : points) {
-        point[0] -= min;
-        point[1] -= min;
-        point[2] -= min;
-    }
+        // Now translate all points
+        QVector<QVector3D> points = pointsOriginal;
+        for(QVector3D &point : points) {
+            point[0] -= min;
+            point[1] -= min;
+            point[2] -= min;
+        }
 
-    float cellSize;
-    CellList cellList = buildCellList(points, systemSize, cutoff, cellSize);
-    const int numCells = cellList.size(); // Each index should be identical
+        float cellSize;
+        CellList cellList = buildCellList(points, systemSize, cutoff, cellSize);
+        const int numCells = cellList.size(); // Each index should be identical
 
-    const float voxelSize = systemSize / m_size;
-    for(int i=0; i<m_size; i++) {
-        for(int j=0; j<m_size; j++) {
-            for(int k=0; k<m_size; k++) {
-                const QVector3D voxelCenter((i+0.5)*voxelSize, (j+0.5)*voxelSize, (k+0.5)*voxelSize);
-                float minimumDistanceSquared0 = 1e10;
-                float minimumDistanceSquared = 1e10;
-                // Find the cell list where this position belongs and loop through all cells around
-                const int cx = voxelCenter[0] / cellSize;
-                const int cy = voxelCenter[1] / cellSize;
-                const int cz = voxelCenter[2] / cellSize;
+        m_values.clear();
+        int numberOfRandomVectors = 1e4;
+        m_values.reserve(numberOfRandomVectors);
+        for(int i=0; i<numberOfRandomVectors; i++) {
+            float x = systemSize*(rand() / float(RAND_MAX));
+            float y = systemSize*(rand() / float(RAND_MAX));
+            float z = systemSize*(rand() / float(RAND_MAX));
+            QVector3D randomPosition(x,y,z);
+            const int cx = randomPosition[0] / cellSize;
+            const int cy = randomPosition[1] / cellSize;
+            const int cz = randomPosition[2] / cellSize;
+            float minimumDistanceSquared0 = 1e10;
+            float minimumDistanceSquared = 1e10;
 
-                // Loop through all 27 cells with size=cutoff
-                for(int dx=-1; dx<=1; dx++) {
-                    for(int dy=-1; dy<=1; dy++) {
-                        for(int dz=-1; dz<=1; dz++) {
-                            const vector<int> &pointsInCell = cellList[periodic(cx+dx, numCells)][periodic(cy+dy, numCells)][periodic(cz+dz, numCells)];
-                            for(const int &pointIndex : pointsInCell) {
-                                const QVector3D &point = points[pointIndex];
+            // Loop through all 27 cells with size=cutoff
+            for(int dx=-1; dx<=1; dx++) {
+                for(int dy=-1; dy<=1; dy++) {
+                    for(int dz=-1; dz<=1; dz++) {
+                        const vector<int> &pointsInCell = cellList[periodic(cx+dx, numCells)][periodic(cy+dy, numCells)][periodic(cz+dz, numCells)];
+                        for(const int &pointIndex : pointsInCell) {
+                            const QVector3D &point = points[pointIndex];
 
-                                const float distanceSquared = periodicDistanceSquared(point, voxelCenter, systemSize);
-                                minimumDistanceSquared = std::min(minimumDistanceSquared, distanceSquared);
-                            }
+                            const float distanceSquared = periodicDistanceSquared(point, randomPosition, systemSize);
+                            minimumDistanceSquared = std::min(minimumDistanceSquared, distanceSquared);
                         }
                     }
                 }
-                if(minimumDistanceSquared == minimumDistanceSquared0) {
-                    minimumDistanceSquared = -1;
-                }
-                setValue(i,j,k,float(minimumDistanceSquared));
             }
-        }
-    }
 
-    m_isValid = true;
+            if(minimumDistanceSquared == minimumDistanceSquared0) {
+                minimumDistanceSquared = -1;
+            }
+
+            m_values.push_back(float(minimumDistanceSquared));
+        }
+
+        m_isValid = true;
+
+//    if(pointsOriginal.size() == 0) {
+//        qDebug() << "DistanceToAtom::compute WARNING: input vector is empty.";
+//        return;
+//    }
+
+//    float min = 1e90;
+//    float max = -1e90;
+//    for(const QVector3D &point : pointsOriginal) {
+//        min = std::min(min, point[0]);
+//        min = std::min(min, point[1]);
+//        min = std::min(min, point[2]);
+
+//        max = std::max(max, point[0]);
+//        max = std::max(max, point[1]);
+//        max = std::max(max, point[2]);
+//    }
+//    max += 1e-5;
+//    const float systemSize = max - min;
+
+//    // Now translate all points
+//    QVector<QVector3D> points = pointsOriginal;
+//    for(QVector3D &point : points) {
+//        point[0] -= min;
+//        point[1] -= min;
+//        point[2] -= min;
+//    }
+
+//    float cellSize;
+//    CellList cellList = buildCellList(points, systemSize, cutoff, cellSize);
+//    const int numCells = cellList.size(); // Each index should be identical
+
+//    const float voxelSize = systemSize / m_size;
+//    for(int i=0; i<m_size; i++) {
+//        for(int j=0; j<m_size; j++) {
+//            for(int k=0; k<m_size; k++) {
+//                const QVector3D voxelCenter((i+0.5)*voxelSize, (j+0.5)*voxelSize, (k+0.5)*voxelSize);
+//                float minimumDistanceSquared0 = 1e10;
+//                float minimumDistanceSquared = 1e10;
+//                // Find the cell list where this position belongs and loop through all cells around
+//                const int cx = voxelCenter[0] / cellSize;
+//                const int cy = voxelCenter[1] / cellSize;
+//                const int cz = voxelCenter[2] / cellSize;
+
+//                // Loop through all 27 cells with size=cutoff
+//                for(int dx=-1; dx<=1; dx++) {
+//                    for(int dy=-1; dy<=1; dy++) {
+//                        for(int dz=-1; dz<=1; dz++) {
+//                            const vector<int> &pointsInCell = cellList[periodic(cx+dx, numCells)][periodic(cy+dy, numCells)][periodic(cz+dz, numCells)];
+//                            for(const int &pointIndex : pointsInCell) {
+//                                const QVector3D &point = points[pointIndex];
+
+//                                const float distanceSquared = periodicDistanceSquared(point, voxelCenter, systemSize);
+//                                minimumDistanceSquared = std::min(minimumDistanceSquared, distanceSquared);
+//                            }
+//                        }
+//                    }
+//                }
+//                if(minimumDistanceSquared == minimumDistanceSquared0) {
+//                    minimumDistanceSquared = -1;
+//                }
+//                setValue(i,j,k,float(minimumDistanceSquared));
+//            }
+//        }
+//    }
+
+//    m_isValid = true;
 }
 
 bool DistanceToAtom::isValid()

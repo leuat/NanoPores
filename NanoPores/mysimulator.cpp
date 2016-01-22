@@ -84,6 +84,7 @@ void MyWorker::manageCommands()
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
             m_likelihood.setDataInput(&m_dataParticles);
+            qDebug() << "File loaded suxxessfully.";
         }
     }
     workerData->setCommand("");

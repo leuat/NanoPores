@@ -154,6 +154,7 @@ Window {
            height: parent.height*(1-splitWindow)
            y: parent.height*splitWindow
            fitData: true
+           fitExact: true
            xLabel: "d [Å] "
            yLabel: "P(d)"
            title: "Scale"
@@ -309,6 +310,7 @@ Window {
         y: parent.height*splitWindow
         x: parent.width*0.5
         fitData: true
+        fitExact: true
         xLabel: "d [Å]"
         yLabel: "P(d)"
         title: ""

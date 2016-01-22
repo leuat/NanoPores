@@ -16,7 +16,7 @@ private:
 
     int m_voxelsPerDimension = 20;
     int m_histogramBins = 100;
-    double m_cutoff = 30;
+    double m_cutoff = 20;
 
 
 public:
