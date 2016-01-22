@@ -9,5 +9,6 @@
         <file>cubemap_positiveZ.jpg</file>
         <file>ParametersGUI.qml</file>
         <file>ParameterSlider.qml</file>
+        <file>Label.qml</file>
     </qresource>
 </RCC>

@@ -26,6 +26,8 @@ SimulatorWorker *MySimulator::createWorker()
 void MyWorker::AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList) {
     QVector3D qc = p->getType().color;
     if (spheres!=nullptr) {
+//        if (rand()%1000>990)
+//            qDebug() << "ADDING" << endl;
         spheres->colors().append(QColor(qc.x()*255.0, qc.y()*255.0, qc.z()*255.0, 1));
         spheres->positions().append( m_particles.ScalePos(p,5));
         spheres->scales().append(p->getType().size);
@@ -63,9 +65,10 @@ void MyWorker::saveFile()
 void MyWorker::manageCommands()
 {
     if (workerData->command()!="") {
+        qDebug() << "command: " << workerData->command();
         QStringList cmd = workerData->command().toLower().split(" ");
         if (cmd[0]=="statistics") {
-            qDebug() << "Starting analysis";
+            qDebug() << "Starting analysis on parameter: " << cmd[1];
             //calculateStatistics();
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -74,7 +77,8 @@ void MyWorker::manageCommands()
                 return;
             }
             Parameters* p = workerData->noiseParameters();
-            m_likelihood.BruteForce1D(10, p->getParameter("scale"), p);
+
+            m_likelihood.BruteForce1D(10, p->getParameter(cmd[1]), p);
         }
         if (cmd[0]=="loaddata") {
             QUrl url = cmd[1];
@@ -88,7 +92,10 @@ void MyWorker::manageCommands()
         workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
         workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
         workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
-
+    }
+    if (m_likelihood.getDone()){
+        m_likelihood.setDone(false);
+        qDebug() << "Min value: " << m_likelihood.getMinVal();
     }
 }
 
@@ -138,11 +145,11 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
     if(!np) {
         return;
     }
+    m_particles.BoundingBox();
 
     if (workerData->enableCutting()) {
         GeometryLibrary gl;
         gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, np);
-        m_particles.BoundingBox();
         for (Particle* pos : m_particles.getParticles()) {
 
             QVector3D p = pos->getPos()/m_particles.getBoundsSize()*10;

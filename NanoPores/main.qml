@@ -250,10 +250,10 @@ Window {
     }
 
     ParametersGUI {
-        width: 200
+        width: 400
         height: 400
-        y: 90;
-        x: parent.width*0.5
+        y: 120;
+        x: parent.width*0.0
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
         textColor: "white"

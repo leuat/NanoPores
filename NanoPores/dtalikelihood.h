@@ -14,6 +14,11 @@ private:
     Particles* m_originalParticles;
     QVector<QVector3D> m_dataParticles;
 
+    int m_voxelsPerDimension = 20;
+    int m_histogramBins = 100;
+    double m_cutoff = 30;
+
+
 public:
     DTALikelihood();
 
@@ -38,6 +43,12 @@ public:
 
     QVector<QPointF> currentModel() const;
     QVector<QPointF> currentData() const;
+    int voxelsPerDimension() const;
+    void setVoxelsPerDimension(int voxelsPerDimension);
+    int histogramBins() const;
+    void setHistogramBins(int histogramBins);
+    double cutoff() const;
+    void setCutoff(double cutoff);
 };
 
 #endif // DTALIKELIHOOD_H

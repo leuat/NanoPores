@@ -4,6 +4,36 @@
 #include <QDebug>
 
 
+int DTALikelihood::voxelsPerDimension() const
+{
+    return m_voxelsPerDimension;
+}
+
+void DTALikelihood::setVoxelsPerDimension(int voxelsPerDimension)
+{
+    m_voxelsPerDimension = voxelsPerDimension;
+}
+
+int DTALikelihood::histogramBins() const
+{
+    return m_histogramBins;
+}
+
+void DTALikelihood::setHistogramBins(int histogramBins)
+{
+    m_histogramBins = histogramBins;
+}
+
+double DTALikelihood::cutoff() const
+{
+    return m_cutoff;
+}
+
+void DTALikelihood::setCutoff(double cutoff)
+{
+    m_cutoff = cutoff;
+}
+
 DTALikelihood::DTALikelihood()
 {
 
@@ -11,11 +41,11 @@ DTALikelihood::DTALikelihood()
 
 void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& graph)
 {
-    DistanceToAtom da(20);
+    DistanceToAtom da(m_voxelsPerDimension); // voxes_per_dimension
     if (points.size()==0)
         return;
-    da.compute(points, 30.0);
-    QVector<QPointF> hist = da.histogram(100);
+    da.compute(points, m_cutoff); // cutoff
+    QVector<QPointF> hist = da.histogram(m_histogramBins); // bins
     graph.fromQVector(hist);
     graph.normalizeArea();
 

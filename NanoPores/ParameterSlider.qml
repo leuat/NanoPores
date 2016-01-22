@@ -10,15 +10,29 @@ Row {
     property alias maximumValue: mySlider.maximumValue
     property real labelWidth: 80
     spacing: 5
-    width: 200
+    width: 400
 
     Label {
-        text: name+': '
+        text: name+' '
         color: rootItem.textColor
         width: rootItem.labelWidth
     }
+    Label {
+        text: '' + parseFloat(Math.round(value * 1000) / 1000).toFixed(3) +' : '
+        color: rootItem.textColor
+        width: rootItem.labelWidth/2
+    }
     Slider {
         id: mySlider
-        width: rootItem.width - labelWidth - rootItem.spacing
+        width: rootItem.width - labelWidth*2 - rootItem.spacing*3
+    }
+    Button {
+        width: labelWidth/2;
+     //   color: rootItem.textColor;
+        text: "F"
+        onClicked: {
+            data2.command = "statistics " + name
+        }
+
     }
 }
