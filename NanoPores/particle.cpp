@@ -56,8 +56,7 @@ void Particles::open(const char *filename) {
        QTextStream in(&inputFile);
        int cnt = 0;
 
-
-       while (!in.atEnd())
+      while (!in.atEnd())
        {
           QString line = in.readLine();
           if (cnt>=2) {

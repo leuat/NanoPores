@@ -93,27 +93,12 @@ Window {
             }
         }
         Button {
-            id: btnCalculateStatistics
-            text: "Calculate statistics"
-            y: 30
-            onClicked: {
-                data2.command = "statistics"
-            }
-        }
-        Button {
             id: btnDirty
             text: "You dirty boy"
-            y: 60
+            y: 30
             onClicked: {
                 data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
                 data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-            }
-        }
-        Button {
-            id: btnDirty2
-            text: "You dirty girl"
-            y: 90
-            onClicked: {
                 data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
             }
         }
@@ -138,8 +123,10 @@ Window {
             title: "Please choose a file"
 
             onAccepted: {
-                if (mode=="mode1")
+                if (mode=="mode1") {
                     data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                    data2.command = "loaddata "+ fileDialogOpenOriginal.fileUrls.toString();
+                }
                 if (mode=="mode2")
                     data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
                 if (mode=="mode3") {
