@@ -111,7 +111,7 @@ public:
         }
         boundsSize = (boundsMax - boundsMin).length();
     }
-    QVector3D ScalePos(Particle* p, float scale) {
+    QVector3D scalePos(Particle* p, float scale) {
         return (p->getPos() - (boundsMax+boundsMin)*0.5)/boundsSize*scale;
     }
 

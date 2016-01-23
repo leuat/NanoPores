@@ -8,32 +8,14 @@
 #include <QElapsedTimer>
 
 float floatRandom(const int & min, const int & max) {
-#if defined(__clang__)
     static std::mt19937 generator;
-#else
-    static thread_local std::mt19937 generator;
-#endif
     std::uniform_real_distribution<float> distribution(min, max);
     return distribution(generator);
 }
 
-DistanceToAtom::DistanceToAtom(int size)
+DistanceToAtom::DistanceToAtom(int numberOfRandomVectors)
 {
-    resize(size);
-}
-
-float DistanceToAtom::periodicDistanceSquared(const QVector3D &p1, const QVector3D &p2, float systemSize)
-{
-    float dx = p1[0] - p2[0];
-    float dy = p1[1] - p2[1];
-    float dz = p1[2] - p2[2];
-    if(dx < -0.5*systemSize) dx += systemSize;
-    else if(dx > 0.5*systemSize) dx -= systemSize;
-    if(dy < -0.5*systemSize) dy += systemSize;
-    else if(dy > 0.5*systemSize) dy -= systemSize;
-    if(dz < -0.5*systemSize) dz += systemSize;
-    else if(dz > 0.5*systemSize) dz -= systemSize;
-    return dx*dx + dy*dy + dz*dz;
+    m_numberOfRandomVectors = numberOfRandomVectors;
 }
 
 CellList DistanceToAtom::buildCellList(const QVector<QVector3D> &points, float size, float cutoff, float &cellSize)
@@ -42,7 +24,7 @@ CellList DistanceToAtom::buildCellList(const QVector<QVector3D> &points, float s
     cellSize = cutoff;
     int numCells = size / cutoff;
     cellSize = size / numCells;
-    cellList.resize(numCells, vector<vector<vector<int> > >(numCells, vector<vector<int> >(numCells)));
+    cellList.resize(numCells, vector<vector<vector<QVector3D> > >(numCells, vector<vector<QVector3D> >(numCells)));
     for(int i=0; i<points.size(); i++) {
         const QVector3D &p = points[i];
         int ci = p[0] / cellSize;
@@ -52,7 +34,7 @@ CellList DistanceToAtom::buildCellList(const QVector<QVector3D> &points, float s
             qFatal("DistanceToAtom::buildCellList() error: particle %d is out of cell list bounds.", i);
             exit(1);
         }
-        cellList[ci][cj][ck].push_back(i);
+        cellList[ci][cj][ck].push_back(p);
     }
     return cellList;
 }
@@ -88,40 +70,58 @@ void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cut
         point[1] -= min;
         point[2] -= min;
     }
-
     float cellSize;
     CellList cellList = buildCellList(points, systemSize, cutoff, cellSize);
     const int numCells = cellList.size(); // Each index should be identical
 
+
     m_values.clear();
-    const int numberOfRandomVectors = 1e4;
-    m_values.resize(numberOfRandomVectors);
-    int numCompares = 0;
-#pragma omp parallel for num_threads(4)
-    for(int i=0; i<numberOfRandomVectors; i++) {
-        float x = floatRandom(0, systemSize);
-        float y = floatRandom(0, systemSize);
-        float z = floatRandom(0, systemSize);
-//        float x = systemSize*(rand() / float(RAND_MAX));
-//        float y = systemSize*(rand() / float(RAND_MAX));
-//        float z = systemSize*(rand() / float(RAND_MAX));
-        QVector3D randomPosition(x,y,z);
-        const int cx = randomPosition[0] / cellSize;
-        const int cy = randomPosition[1] / cellSize;
-        const int cz = randomPosition[2] / cellSize;
-        float minimumDistanceSquared0 = 1e10;
+    m_values.resize(m_numberOfRandomVectors);
+    m_randomNumbers.resize(3*m_numberOfRandomVectors);
+
+
+    for(int i=0; i<3*m_numberOfRandomVectors; i++) {
+        m_randomNumbers[i] = floatRandom(0, systemSize);
+    }
+
+    const float oneOverCellSize = 1.0/cellSize;
+
+#pragma omp parallel for num_threads(8)
+    for(int i=0; i<m_numberOfRandomVectors; i++) {
+        const float x = m_randomNumbers[3*i+0];
+        const float y = m_randomNumbers[3*i+1];
+        const float z = m_randomNumbers[3*i+2];
+
+        const int cx = x * oneOverCellSize;
+        const int cy = y * oneOverCellSize;
+        const int cz = z * oneOverCellSize;
         float minimumDistanceSquared = 1e10;
+        const float minimumDistanceSquared0 = minimumDistanceSquared;
 
         // Loop through all 27 cells with size=cutoff
         for(int dx=-1; dx<=1; dx++) {
             for(int dy=-1; dy<=1; dy++) {
                 for(int dz=-1; dz<=1; dz++) {
-                    const vector<int> &pointsInCell = cellList[periodic(cx+dx, numCells)][periodic(cy+dy, numCells)][periodic(cz+dz, numCells)];
-                    for(const int &pointIndex : pointsInCell) {
-                        const QVector3D &point = points[pointIndex];
+                    const vector<QVector3D> &pointsInCell = cellList[periodic(cx+dx, numCells)][periodic(cy+dy, numCells)][periodic(cz+dz, numCells)];
+                    const int numberOfPointsInCell = pointsInCell.size();
 
-                        const float distanceSquared = periodicDistanceSquared(point, randomPosition, systemSize);
-                        minimumDistanceSquared = std::min(minimumDistanceSquared, distanceSquared);
+                    for(int j=0; j<numberOfPointsInCell; j++) {
+                        // const QVector3D &point = points[pointIndex];
+                        const QVector3D &point = pointsInCell[j];
+
+                        float dx = x - point[0];
+                        float dy = y - point[1];
+                        float dz = z - point[2];
+                        if(dx < -0.5*systemSize) dx += systemSize;
+                        else if(dx > 0.5*systemSize) dx -= systemSize;
+
+                        if(dy < -0.5*systemSize) dy += systemSize;
+                        else if(dy > 0.5*systemSize) dy -= systemSize;
+
+                        if(dz < -0.5*systemSize) dz += systemSize;
+                        else if(dz > 0.5*systemSize) dz -= systemSize;
+                        const float distanceSquared = dx*dx + dy*dy + dz*dz;
+                        if(distanceSquared < minimumDistanceSquared) minimumDistanceSquared = distanceSquared;
                     }
                 }
             }
@@ -133,7 +133,11 @@ void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cut
 
         m_values[i] = float(minimumDistanceSquared);
     }
-    qDebug() << "DAO finished after " << timer.elapsed() << " ms with " << numCompares << " compares.";
+
+    m_randomNumbers.clear();
+    points.clear();
+
+    qDebug() << "DAO finished after " << timer.elapsed() << " ms.";
     m_isValid = true;
 
     //    if(pointsOriginal.size() == 0) {
@@ -207,30 +211,6 @@ void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cut
 bool DistanceToAtom::isValid()
 {
     return m_isValid;
-}
-
-void DistanceToAtom::resize(int size)
-{
-    m_size = size;
-    m_values.resize(size*size*size);
-    for(float &v : m_values) { v = 0; }
-    m_isValid = false;
-}
-
-float DistanceToAtom::getValue(int i, int j, int k)
-{
-    int idx = index(i,j,k);
-    if(idx < 0 || idx >= m_size) {
-        qFatal("Error, DistanceToAtom::getValue(%d,%d,%d) is out of bounds", i,j,k);
-        exit(1);
-    }
-
-    return m_values[idx];
-}
-
-void DistanceToAtom::setValue(int i, int j, int k, float value)
-{
-    m_values[index(i,j,k)] = value;
 }
 
 QVector<QPointF> DistanceToAtom::histogram(int bins) {

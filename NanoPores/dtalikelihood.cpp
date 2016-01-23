@@ -6,12 +6,12 @@
 
 int DTALikelihood::voxelsPerDimension() const
 {
-    return m_voxelsPerDimension;
+    return m_numberOfRandomVectors;
 }
 
 void DTALikelihood::setVoxelsPerDimension(int voxelsPerDimension)
 {
-    m_voxelsPerDimension = voxelsPerDimension;
+    m_numberOfRandomVectors = voxelsPerDimension;
 }
 
 int DTALikelihood::histogramBins() const
@@ -41,7 +41,7 @@ DTALikelihood::DTALikelihood()
 
 void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& graph)
 {
-    DistanceToAtom da(m_voxelsPerDimension); // voxes_per_dimension
+    DistanceToAtom da(m_numberOfRandomVectors); // voxes_per_dimension
     if (points.size()==0)
         return;
     da.compute(points, m_cutoff); // cutoff

@@ -2,12 +2,14 @@ TEMPLATE = app
 CONFIG += c++11
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
+
 #CONFIG -=app_bundle
 QT += qml quick widgets opengl openglextensions svg
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lgsl
-
+LIBS += -L/opt/intel/lib
 SOURCES += main.cpp \
     mysimulator.cpp \
     io.cpp \

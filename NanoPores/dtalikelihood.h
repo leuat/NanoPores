@@ -14,10 +14,9 @@ private:
     Particles* m_originalParticles;
     QVector<QVector3D> m_dataParticles;
 
-    int m_voxelsPerDimension = 20;
+    int m_numberOfRandomVectors = 32768;
     int m_histogramBins = 100;
-    double m_cutoff = 20;
-
+    double m_cutoff = 30;
 
 public:
     DTALikelihood();

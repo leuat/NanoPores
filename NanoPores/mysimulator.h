@@ -368,7 +368,7 @@ private:
 
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
-    void AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
+    void addParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
     void openFile();
     void saveFile();
     void manageCommands();

@@ -12,8 +12,8 @@ using namespace std;
 
 MySimulator::MySimulator()
 {
- //   if (m_data!=nullptr)
-   //     m_data->Allocate();
+    //   if (m_data!=nullptr)
+    //     m_data->Allocate();
 }
 
 SimulatorWorker *MySimulator::createWorker()
@@ -23,17 +23,16 @@ SimulatorWorker *MySimulator::createWorker()
 
 
 
-void MyWorker::AddParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList) {
-    QVector3D qc = p->getType().color;
+void MyWorker::addParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList) {
+    QVector3D color = p->getType().color;
     if (spheres!=nullptr) {
-//        if (rand()%1000>990)
-//            qDebug() << "ADDING" << endl;
-        spheres->colors().append(QColor(qc.x()*255.0, qc.y()*255.0, qc.z()*255.0, 1));
-        spheres->positions().append( m_particles.ScalePos(p,5));
+        spheres->colors().append(QColor(color.x()*255.0, color.y()*255.0, color.z()*255.0, 1));
+        spheres->positions().append( m_particles.scalePos(p,5));
         spheres->scales().append(p->getType().size);
     }
-    if (extraList!=nullptr)
+    if (extraList!=nullptr) {
         extraList->getParticles().append(p);
+    }
 }
 
 void MyWorker::openFile()
@@ -121,7 +120,7 @@ void MyWorker::calculateStatistics()
 
     workerData->dataSource()->setPoints(hist, true);
 
-/*
+    /*
     workerData->dataSource()->clear();
     for (int i=0;i<100;i++)
         workerData->dataSource()->addPoint(i, rand()%100);
@@ -138,7 +137,7 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         spheres->scales().clear();
         spheres->positions().clear();
     }
-   if (m_particles.size()==0)
+    if (m_particles.size()==0)
         return;
 
     NoiseParameters *np = workerData->noiseParameters();
@@ -151,26 +150,37 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
     if (workerData->enableCutting()) {
         GeometryLibrary gl;
         gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, np);
-        for (Particle* pos : m_particles.getParticles()) {
-
-            QVector3D p = pos->getPos()/m_particles.getBoundsSize()*10;
-            if (!(pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
-                  pos->getPos()[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
+        const int numberOfParticles = m_particles.getParticles().size();
+        QVector<bool> shouldBeAdded;
+        shouldBeAdded.resize(numberOfParticles);
+        memset(&shouldBeAdded[0], 0, shouldBeAdded.size()*sizeof(bool));
+#pragma omp parallel for num_threads(8)
+        for(int i=0; i<numberOfParticles; i++) {
+            Particle *pos = m_particles.getParticles()[i];
+            const QVector3D realPos = pos->getPos();
+            QVector3D scaledPos = realPos/m_particles.getBoundsSize()*10;
+            if (!(realPos[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
+                  realPos[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
             {
-
-                if (!gl.isInVoid(p))
-                    AddParticleToSphere(pos, spheres,extraList);
+                if (!gl.isInVoid(scaledPos)) {
+                    shouldBeAdded[i] = true;
+                }
             }
         }
+        for(int i=0; i<numberOfParticles; i++) {
+            Particle *pos = m_particles.getParticles()[i];
+            if(shouldBeAdded[i])  addParticleToSphere(pos, spheres,extraList);
+        }
+        shouldBeAdded.clear();
     }
     else { // Just copy
-        for (Particle* pos : m_particles.getParticles())
-            AddParticleToSphere(pos, spheres, extraList);
+        for (Particle* pos : m_particles.getParticles()) {
+            addParticleToSphere(pos, spheres, extraList);
+        }
     }
-    if (spheres != nullptr)
+    if (spheres != nullptr) {
         workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
-
-
+    }
 }
 
 
@@ -192,7 +202,7 @@ void MyWorker::synchronizeRenderer(Renderable *renderableObject) {
 
 MyWorker::MyWorker()
 {
-//    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz");
+    //    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz");
 
 }
 
@@ -211,7 +221,7 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
 void MyWorker::work()
 {
     if (workerData!=nullptr) {
-//        workerData->Allocate();
+        //        workerData->Allocate();
         constrainParticles(&m_spheres, nullptr);
     }
 }
