@@ -8,7 +8,9 @@ Row {
     property alias value: mySlider.value
     property alias minimumValue: mySlider.minimumValue
     property alias maximumValue: mySlider.maximumValue
+    property alias stepSize: mySlider.stepSize
     property real labelWidth: 80
+    property bool buttonVisible: true
     spacing: 5
     width: 400
 
@@ -22,13 +24,14 @@ Row {
         color: rootItem.textColor
         width: rootItem.labelWidth/2
     }
+
     Slider {
         id: mySlider
-        width: rootItem.width - labelWidth*2 - rootItem.spacing*3
+        width: rootItem.width - 2*labelWidth - rootItem.spacing*3
     }
     Button {
         width: labelWidth/2;
-     //   color: rootItem.textColor;
+        visible: rootItem.buttonVisible
         text: "F"
         onClicked: {
             data2.command = "statistics " + name

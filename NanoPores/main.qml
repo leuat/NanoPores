@@ -238,8 +238,9 @@ Window {
     }
 
     ParametersGUI {
+        id: paramGUI
         width: 400
-        height: 400
+        height: 360
         y: 120;
         x: parent.width*0.0
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
@@ -248,47 +249,38 @@ Window {
         labelWidth: 100
         parameters: noiseParameters
         additional: [
-            Row {
-                width: parent.width
-                Label {
-                    text: "Size:"
-                    color: "white"
-                }
-
-                Slider {
-                    id: sliderSize
-                    value: 0.05
-                    minimumValue: 0
-                    maximumValue: 0.5
-                }
+            ParameterSlider {
+                id: sliderSize
+                name: "Size"
+                minimumValue: 0.05
+                maximumValue: 1
+                value: 0.05
+                stepSize: 0.1
+                labelWidth: paramGUI.labelWidth
+                textColor: "white"
+                buttonVisible: false
             },
-            Row {
-                width: parent.width
-                Label {
-                    text: "Slice:"
-                    color: "white"
-                }
-
-                Slider {
-                    id: sliderSlice
-                    value: 1
-                    minimumValue: 0
-                    maximumValue: 1
-                }
+            ParameterSlider {
+                id: sliderSlice
+                name: "Slice"
+                minimumValue: 0.0
+                maximumValue: 1
+                value: 1.0
+                stepSize: 0.05
+                labelWidth: paramGUI.labelWidth
+                textColor: "white"
+                buttonVisible: false
             },
-            Row {
-                width: parent.width
-                Label {
-                    text: "Translate:"
-                    color: "white"
-                }
-
-                Slider {
-                    id: sliderSharpness
-                    value: 0
-                    minimumValue: -1
-                    maximumValue: 1
-                }
+            ParameterSlider {
+                id: sliderSharpness
+                name: "Translate"
+                minimumValue: -1
+                maximumValue: 1
+                value: 0.0
+                stepSize: 0.05
+                labelWidth: paramGUI.labelWidth
+                textColor: "white"
+                buttonVisible: false
             }
         ]
     }
