@@ -77,7 +77,7 @@ void MyWorker::manageCommands()
             }
             Parameters* p = workerData->noiseParameters();
 
-            m_likelihood.BruteForce1D(10, p->getParameter(cmd[1]), p);
+            m_likelihood.bruteForce1D(10, p->getParameter(cmd[1]), p);
         }
         if (cmd[0]=="loaddata") {
             QUrl url = cmd[1];
@@ -88,13 +88,14 @@ void MyWorker::manageCommands()
     }
     workerData->setCommand("");
 
-    if (m_likelihood.Tick()) {
+    if (m_likelihood.tick()) {
         workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
         workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
         workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
     }
     if (m_likelihood.getDone()){
         m_likelihood.setDone(false);
+        workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
         qDebug() << "Min value: " << m_likelihood.getMinVal();
     }
 }
@@ -154,6 +155,7 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         QVector<bool> shouldBeAdded;
         shouldBeAdded.resize(numberOfParticles);
         memset(&shouldBeAdded[0], 0, shouldBeAdded.size()*sizeof(bool));
+
 #pragma omp parallel for num_threads(8)
         for(int i=0; i<numberOfParticles; i++) {
             Particle *pos = m_particles.getParticles()[i];

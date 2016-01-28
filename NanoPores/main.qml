@@ -1,10 +1,10 @@
 import QtQuick 2.5
-import QtQuick.Window 2.2
+import QtQuick.Window 2.0
+import QtQuick.Controls 1.4
+import QtQuick.Dialogs 1.2
 import SimVis 1.0
 import MySimulator 1.0
 import WorkerData 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Dialogs 1.0
 import Qt.labs.settings 1.0
 import QMLPlot 1.0
 import GeometryLibrary 1.0
@@ -15,7 +15,6 @@ Window {
     height: 1024
 
     property real splitWindow : 0.6
-
 
     MySimulator {
         id: simulator1
@@ -127,10 +126,14 @@ Window {
                     data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
                     data2.command = "loaddata "+ fileDialogOpenOriginal.fileUrls.toString();
                 }
-                if (mode=="mode2")
+                if (mode=="mode2") {
                     data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                }
                 if (mode=="mode3") {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
+                }
+                if (mode==="parameters") {
+                    noiseParameters.load(fileDialogOpenOriginal.fileUrls.toString())
                 }
             }
         }
@@ -138,11 +141,16 @@ Window {
         FileDialog {
             id: fileDialogSave
             selectExisting : false
-             property string mode
+            property string mode
             title: "Please choose a location to save"
 
             onAccepted: {
-                data2.fileToSave = fileDialogSave.fileUrls.toString();
+                if(mode==="parameters") {
+                    noiseParameters.save(fileDialogSave.fileUrls.toString())
+                } else if(mode==="data") {
+                    data2.fileToSave = fileDialogSave.fileUrls.toString();
+                }
+
             }
         }
 
@@ -233,6 +241,7 @@ Window {
         id: btnSave
         text: "Save"
         onClicked: {
+            fileDialogSave.mode = "data"
             fileDialogSave.open()
         }
     }
@@ -240,7 +249,7 @@ Window {
     ParametersGUI {
         id: paramGUI
         width: 400
-        height: 360
+        height: 390
         y: 120;
         x: parent.width*0.0
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
@@ -281,8 +290,28 @@ Window {
                 labelWidth: paramGUI.labelWidth
                 textColor: "white"
                 buttonVisible: false
+            },
+            Row {
+                Button {
+                    id: paramLoad
+                    text: "Load"
+                    onClicked: {
+                        fileDialogOpenOriginal.mode = "parameters"
+                        fileDialogOpenOriginal.open()
+                    }
+                }
+                Button {
+                    id: paramSave
+                    text: "Save"
+                    onClicked: {
+                        fileDialogSave.mode = "parameters"
+                        fileDialogSave.open()
+                    }
+                }
             }
         ]
+
+
     }
 
     Label {
@@ -324,10 +353,5 @@ Window {
             // style: Qt.DotLine
         }
     }
-
-
-
-
-
 }
 

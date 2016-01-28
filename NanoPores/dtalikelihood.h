@@ -14,9 +14,9 @@ private:
     Particles* m_originalParticles;
     QVector<QVector3D> m_dataParticles;
 
-    int m_numberOfRandomVectors = 32768;
+    int m_numberOfRandomVectors = 8192;
     int m_histogramBins = 100;
-    double m_cutoff = 30;
+    double m_cutoff = 20;
 
 public:
     DTALikelihood();
@@ -37,7 +37,7 @@ public:
 
     void calculateStatistics(QVector<QVector3D>& particleList, LGraph& graph);
 
-    void CalculateModel(Parameters* p) override;
+    void calculateModel(Parameters* p) override;
 
 
     QVector<QPointF> currentModel() const;

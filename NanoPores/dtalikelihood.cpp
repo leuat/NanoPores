@@ -51,7 +51,7 @@ void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& grap
 
 }
 
-void DTALikelihood::CalculateModel(Parameters *p)
+void DTALikelihood::calculateModel(Parameters *p)
 {
     GeometryLibrary gl;
     gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, p);

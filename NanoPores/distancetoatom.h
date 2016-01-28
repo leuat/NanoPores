@@ -10,7 +10,7 @@ template<class T>
 bool checkRange(T value, T min, T max) {
     return (value >= min) && (value <= max);
 }
-float floatRandom(const int & min, const int & max);
+float floatRandom(const float & min, const float & max);
 
 class DistanceToAtom
 {
