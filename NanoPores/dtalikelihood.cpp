@@ -58,6 +58,7 @@ void DTALikelihood::calculateModel(Parameters *p)
     m_modelParticles.clear();
 //    qDebug() << "Original particles count: " << m_originalParticles->size();
     m_originalParticles->BoundingBox();
+
     for (Particle* pos : m_originalParticles->getParticles()) {
         QVector3D p = pos->getPos()/m_originalParticles->getBoundsSize()*10;
             if (!gl.isInVoid(p))

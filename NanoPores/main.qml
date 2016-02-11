@@ -101,6 +101,14 @@ Window {
                 data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
             }
         }
+        Button {
+            id: btnStatistics
+            text: "Calculate statistics"
+            y: 60
+            onClicked: {
+                data2.command = "calculate_model_statistics"
+            }
+        }
 
         Label {
             id: lblinfo1

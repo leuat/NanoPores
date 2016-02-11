@@ -85,6 +85,16 @@ void MyWorker::manageCommands()
             m_likelihood.setDataInput(&m_dataParticles);
             qDebug() << "File loaded suxxessfully.";
         }
+        if (cmd[0]=="calculate_model_statistics") {
+            m_likelihood.setOriginalInput(&m_particles);
+            if (m_dataParticles.size()==0) {
+                qDebug() << "ZERO particles in data input!";
+                workerData->setCommand("");
+                return;
+            }
+
+            calculateModelStatistics();
+        }
     }
     workerData->setCommand("");
 
@@ -126,6 +136,12 @@ void MyWorker::calculateStatistics()
     for (int i=0;i<100;i++)
         workerData->dataSource()->addPoint(i, rand()%100);
 */
+}
+
+void MyWorker::calculateModelStatistics()
+{
+    NoiseParameters *np = workerData->noiseParameters();
+    m_likelihood.modelAnalysis(15, np);
 }
 
 
@@ -204,7 +220,6 @@ void MyWorker::synchronizeRenderer(Renderable *renderableObject) {
 
 MyWorker::MyWorker()
 {
-    //    m_particles.open("/Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz");
 
 }
 
@@ -223,7 +238,6 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
 void MyWorker::work()
 {
     if (workerData!=nullptr) {
-        //        workerData->Allocate();
         constrainParticles(&m_spheres, nullptr);
     }
 }

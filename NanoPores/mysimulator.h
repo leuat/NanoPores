@@ -373,6 +373,9 @@ private:
     void saveFile();
     void manageCommands();
     void calculateStatistics();
+    // This one calculates E(x) and sigma for the given model
+    void calculateModelStatistics();
+
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
     virtual void work();

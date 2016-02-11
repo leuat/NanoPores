@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     GeometryLibrary/noise.cpp \
     GeometryLibrary/perlin.cpp \
     GeometryLibrary/simplex.cpp \
-    GeometryLibrary/simplexnoise.cpp
+    GeometryLibrary/simplexnoise.cpp \
+    GeometryLibrary/likelihood/graphstatistics.cpp
 
 RESOURCES += qml.qrc
 
@@ -71,4 +72,5 @@ HEADERS += \
     GeometryLibrary/noise.h \
     GeometryLibrary/perlin.h \
     GeometryLibrary/simplex.h \
-    GeometryLibrary/simplexnoise.h
+    GeometryLibrary/simplexnoise.h \
+    GeometryLibrary/likelihood/graphstatistics.h
