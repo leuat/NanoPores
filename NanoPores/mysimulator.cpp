@@ -102,6 +102,8 @@ bool MyWorker::manageCommands()
         workerData->setCommand("");
         return true;
     }
+
+    return true;
 }
 
 
