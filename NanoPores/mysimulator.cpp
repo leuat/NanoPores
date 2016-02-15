@@ -85,6 +85,9 @@ void MyWorker::manageCommands()
             m_likelihood.setDataInput(&m_dataParticles);
             qDebug() << "File loaded suxxessfully.";
         }
+        if (cmd[0] =="calculate_porosity")
+            calculatePorosity();
+
         if (cmd[0]=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -196,9 +199,20 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
             addParticleToSphere(pos, spheres, extraList);
         }
     }
+
+
+
     if (spheres != nullptr) {
-        workerData->setLblInfo("# particles: "+ QString("%1").arg(spheres->positions().size()));
+        QString porosity = "Porosity: " + QString("%1").arg((float)spheres->positions().length() / (float)m_particles.size()) + ", calculated: " + QString("%1").arg(m_porosity) +"\n";
+        workerData->setLblInfo(porosity + "# particles: "+ QString("%1").arg(spheres->positions().size()));
     }
+}
+
+void MyWorker::calculatePorosity() {
+    Particles newList;
+    constrainParticles(nullptr, &newList);
+    newList.calculatePorosity();
+    m_porosity = newList.getCalculatedPorosity();
 }
 
 

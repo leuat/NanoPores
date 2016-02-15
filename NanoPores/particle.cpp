@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include "GeometryLibrary/misc/util.h"
+
 using namespace std;
 
 QVector3D Particle::getPos() const
@@ -38,6 +40,26 @@ void Particle::setType(const ParticleType &value)
 float Particles::getBoundsSize() const
 {
     return boundsSize;
+}
+
+float Particles::getIntrinsicPorosity() const
+{
+    return m_intrinsicPorosity;
+}
+
+float Particles::getCalculatedPorosity() const
+{
+    return m_calculatedPorosity;
+}
+
+void Particles::setCalculatedPorosity(float calculatedPorosity)
+{
+    m_calculatedPorosity = calculatedPorosity;
+}
+
+void Particles::setIntrinsicPorosity(float intrinsicPorosity)
+{
+    m_intrinsicPorosity = intrinsicPorosity;
 }
 
 QVector<Particle *>& Particles::getParticles()
@@ -98,6 +120,35 @@ void Particles::getVector3DList(QVector<QVector3D>& list)
 {
     for(Particle* p : particles)
         list.append(p->getPos());
+
+}
+
+void Particles::calculatePorosity()
+{
+    int N = particles.size()/100;
+    if (N==0)
+        return;
+    int cnt = 1;
+    BoundingBox();
+    float l = (boundsMax - boundsMin).length()/135.0;
+    qDebug() << "l = " << l;
+    for (int i=0;i<N;i++) {
+        QVector3D p;
+        p.setX(Util::floatRandom(boundsMin.x(), boundsMax.x()));
+        p.setY(Util::floatRandom(boundsMin.y(), boundsMax.y()));
+        p.setZ(Util::floatRandom(boundsMin.z(), boundsMax.z()));
+        for (int j=0;j<particles.size();j++) {
+            if ((particles[j]->getPos() - p).lengthSquared()<l*l) {
+                cnt++;
+                j=particles.size();
+                break;
+            }
+        }
+        if (rand()%100>=99)
+            qDebug() << cnt / (float)i;
+    }
+    m_calculatedPorosity = (float)cnt/(float)N;
+//    qDebug() << m_calculatedPorosity << "   " << N << " / " << cnt;
 
 }
 

@@ -61,10 +61,13 @@ public:
 };
 
 class Particles {
+private:
     QVector<Particle *> particles;
     QVector3D boundsMin, boundsMax;
     float boundsSize;
 
+    float m_intrinsicPorosity;
+    float m_calculatedPorosity;
 public:
     QVector<Particle *>& getParticles();
 
@@ -98,6 +101,8 @@ public:
         particles.clear();
     }
 
+    void calculatePorosity();
+
     void BoundingBox( ) {
         float LARGE = 1E20;
 
@@ -121,6 +126,10 @@ public:
 
 
     float getBoundsSize() const;
+    float getIntrinsicPorosity() const;
+    float getCalculatedPorosity() const;
+    void setCalculatedPorosity(float calculatedPorosity);
+    void setIntrinsicPorosity(float intrinsicPorosity);
 };
 
 class NBHList {

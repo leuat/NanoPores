@@ -31,7 +31,6 @@ class WorkerData : public QObject {
     Q_PROPERTY(QString lblInfo READ lblInfo WRITE setLblInfo NOTIFY lblInfoChanged)
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
     Q_PROPERTY(NoiseParameters* noiseParameters READ noiseParameters WRITE setNoiseParameters NOTIFY noiseParametersChanged)
-
     Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     Q_PROPERTY(LineGraphDataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
     Q_PROPERTY(LineGraphDataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
@@ -365,7 +364,7 @@ private:
     Spheres m_spheres;
     DTALikelihood m_likelihood;
     NoiseParameters* m_params = nullptr;
-
+    float m_porosity = 0;
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
     void addParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
@@ -373,6 +372,7 @@ private:
     void saveFile();
     void manageCommands();
     void calculateStatistics();
+    void calculatePorosity();
     // This one calculates E(x) and sigma for the given model
     void calculateModelStatistics();
 

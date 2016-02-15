@@ -109,6 +109,14 @@ Window {
                 data2.command = "calculate_model_statistics"
             }
         }
+        Button {
+            id: btnPorosity
+            text: "Porosity"
+            y: 90
+            onClicked: {
+                data2.command = "calculate_porosity"
+            }
+        }
 
         Label {
             id: lblinfo1
@@ -325,7 +333,7 @@ Window {
     Label {
         id: lblinfo2
         x: parent.width*0.5 + 5
-        y: parent.height - 30
+        y: parent.height/2 - 30
         color: Qt.rgba(1,1,1,1)
         text: data2.lblInfo
     }
