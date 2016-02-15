@@ -25,7 +25,6 @@ public:
         dataParticles->getVector3DList(m_dataParticles);
         calculateStatistics(m_dataParticles, m_data);
 //        m_currentData = m_data.toQVector();
-
     }
     void setOriginalInput(Particles* originalParticles) {
         //modelParticles->getVector3DList(m_modelParticles);
@@ -34,6 +33,7 @@ public:
         m_originalParticles = originalParticles;
     }
 
+    LGraph calculateStatisticsDirect(Particles& particles);
 
     void calculateStatistics(QVector<QVector3D>& particleList, LGraph& graph);
 

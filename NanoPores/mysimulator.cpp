@@ -83,10 +83,12 @@ void MyWorker::manageCommands()
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
             m_likelihood.setDataInput(&m_dataParticles);
-            qDebug() << "File loaded suxxessfully.";
         }
         if (cmd[0] =="calculate_porosity")
             calculatePorosity();
+
+        if (cmd[0] == "save_statistics")
+            saveStatistics();
 
         if (cmd[0]=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
@@ -105,6 +107,9 @@ void MyWorker::manageCommands()
         workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
         workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
         workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+
+
+
     }
     if (m_likelihood.getDone()){
         m_likelihood.setDone(false);
@@ -141,10 +146,36 @@ void MyWorker::calculateStatistics()
 */
 }
 
+void MyWorker::saveStatistics()
+{
+    string dir = "";
+
+    LGraph dataDTA = m_likelihood.calculateStatisticsDirect(m_dataParticles);
+    Particles newList;
+    constrainParticles(nullptr, &newList);
+    LGraph modelDTA = m_likelihood.calculateStatisticsDirect(newList);
+
+    dataDTA.SaveText(dir + "dta_data.txt");
+    modelDTA.SaveText(dir +"dta_model.txt");
+
+    NoiseParameters *np = workerData->noiseParameters();
+    m_likelihood.setOriginalInput(&m_particles);
+    m_likelihood.modelAnalysis(15, np);
+
+    if (m_likelihood.tick()) {
+    }
+    m_likelihood.getStatistics().average().SaveText("model_average.txt");
+    m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
+
+
+}
+
 void MyWorker::calculateModelStatistics()
 {
     NoiseParameters *np = workerData->noiseParameters();
     m_likelihood.modelAnalysis(15, np);
+
+
 }
 
 

@@ -39,6 +39,16 @@ DTALikelihood::DTALikelihood()
 
 }
 
+LGraph DTALikelihood::calculateStatisticsDirect(Particles &particles)
+{
+    QVector<QVector3D> qp;
+    particles.getVector3DList(qp);
+    LGraph graph;
+    calculateStatistics(qp, graph);
+    return graph;
+
+}
+
 void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& graph)
 {
     DistanceToAtom da(m_numberOfRandomVectors); // voxes_per_dimension

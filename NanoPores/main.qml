@@ -103,7 +103,7 @@ Window {
         }
         Button {
             id: btnStatistics
-            text: "Calculate statistics"
+            text: "Model statistics"
             y: 60
             onClicked: {
                 data2.command = "calculate_model_statistics"
@@ -115,6 +115,16 @@ Window {
             y: 90
             onClicked: {
                 data2.command = "calculate_porosity"
+                data1.command = "calculate_porosity"
+            }
+        }
+
+        Button {
+            id: btnSaveStatistics
+            text: "Save Statistics"
+            y: 90
+            onClicked: {
+                data2.command = "save_statistics"
             }
         }
 
