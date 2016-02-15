@@ -40,8 +40,9 @@ void MyWorker::openFile()
     if (workerData==nullptr)
         return;
 
-    if (workerData->fileToOpen() !="") {
+    if (!workerData->fileToOpen().isEmpty()) {
         QUrl url = workerData->fileToOpen();
+        qDebug() << workerData->workerName() << " is opening file " << url;
         m_particles.open(url.toLocalFile().toStdString().c_str());
         workerData->setFileToOpen("");
     }
@@ -52,7 +53,7 @@ void MyWorker::saveFile()
     if (workerData==nullptr)
         return;
 
-    if (workerData->fileToSave() !="") {
+    if (!workerData->fileToSave().isEmpty()) {
         QUrl url = workerData->fileToSave();
         Particles newList;
         constrainParticles(nullptr, &newList);
@@ -61,60 +62,45 @@ void MyWorker::saveFile()
     }
 }
 
-void MyWorker::manageCommands()
+bool MyWorker::manageCommands()
 {
-    if (workerData->command()!="") {
-        qDebug() << "command: " << workerData->command();
+    if (!workerData->command().isEmpty()) {
+        qDebug() << workerData->workerName() << "command: " << workerData->command();
         QStringList cmd = workerData->command().toLower().split(" ");
         if (cmd[0]=="statistics") {
-            qDebug() << "Starting analysis on parameter: " << cmd[1];
+            qDebug() << workerData->workerName() << "Starting analysis on parameter: " << cmd[1];
             //calculateStatistics();
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
-                qDebug() << "ZERO particles in data input!";
+                qDebug() << workerData->workerName() << "ZERO particles in data input!";
                 workerData->setCommand("");
-                return;
+                return false;
             }
             Parameters* p = workerData->noiseParameters();
 
             m_likelihood.bruteForce1D(10, p->getParameter(cmd[1]), p);
-        }
-        if (cmd[0]=="loaddata") {
+        } else if (cmd[0]=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
             m_likelihood.setDataInput(&m_dataParticles);
-        }
-        if (cmd[0] =="calculate_porosity")
+        } else if (cmd[0] =="calculate_porosity") {
             calculatePorosity();
-
-        if (cmd[0] == "save_statistics")
+        } else if (cmd[0] == "save_statistics") {
             saveStatistics();
-
-        if (cmd[0]=="calculate_model_statistics") {
+        } else if (cmd[0]=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << "ZERO particles in data input!";
                 workerData->setCommand("");
-                return;
+                return false;
             }
 
             calculateModelStatistics();
+        } else {
+            qDebug() << workerData->workerName() << "Could not parse command: " << cmd[0];
         }
-    }
-    workerData->setCommand("");
-
-    if (m_likelihood.tick()) {
-        workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
-        workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
-        workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
-
-
-
-    }
-    if (m_likelihood.getDone()){
-        m_likelihood.setDone(false);
-        workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
-        qDebug() << "Min value: " << m_likelihood.getMinVal();
+        workerData->setCommand("");
+        return true;
     }
 }
 
@@ -163,11 +149,11 @@ void MyWorker::saveStatistics()
     m_likelihood.modelAnalysis(50, np);
 
     while (m_likelihood.getDone()==false)
-    if (m_likelihood.tick()) {
-        m_likelihood.getStatistics().average().SaveText("model_average.txt");
-        m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
+        if (m_likelihood.tick()) {
+            m_likelihood.getStatistics().average().SaveText("model_average.txt");
+            m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
 
-    }
+        }
 
 
 }
@@ -190,17 +176,17 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         spheres->scales().clear();
         spheres->positions().clear();
     }
-    if (m_particles.size()==0)
-        return;
-
-    NoiseParameters *np = workerData->noiseParameters();
-
-    if(!np) {
+    if (m_particles.size()==0) {
         return;
     }
-    m_particles.BoundingBox();
 
+    m_particles.BoundingBox();
     if (workerData->enableCutting()) {
+        NoiseParameters *np = workerData->noiseParameters();
+        if(!np) {
+            return;
+        }
+
         GeometryLibrary gl;
         gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, np);
         const int numberOfParticles = m_particles.getParticles().size();
@@ -208,7 +194,7 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         shouldBeAdded.resize(numberOfParticles);
         memset(&shouldBeAdded[0], 0, shouldBeAdded.size()*sizeof(bool));
 
-#pragma omp parallel for num_threads(8)
+        // #pragma omp parallel for num_threads(8)
         for(int i=0; i<numberOfParticles; i++) {
             Particle *pos = m_particles.getParticles()[i];
             const QVector3D realPos = pos->getPos();
@@ -232,9 +218,6 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
             addParticleToSphere(pos, spheres, extraList);
         }
     }
-
-
-
     if (spheres != nullptr) {
         QString porosity = "Porosity: " + QString("%1").arg((float)spheres->positions().length() / (float)m_particles.size()) + ", calculated: " + QString("%1").arg(m_porosity) +"\n";
         workerData->setLblInfo(porosity + "# particles: "+ QString("%1").arg(spheres->positions().size()));
@@ -263,14 +246,6 @@ void MyWorker::synchronizeRenderer(Renderable *renderableObject) {
 
 }
 
-
-
-MyWorker::MyWorker()
-{
-
-}
-
-
 void MyWorker::synchronizeSimulator(Simulator *simulator)
 {
     MySimulator *mySimulator = qobject_cast<MySimulator*>(simulator);
@@ -278,7 +253,20 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         workerData = mySimulator->data();
         openFile();
         saveFile();
-        manageCommands();
+        bool everythingOK = manageCommands();
+
+        if(everythingOK) {
+            if (m_likelihood.tick()) {
+                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
+                workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
+                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+            }
+            if (m_likelihood.getDone()){
+                m_likelihood.setDone(false);
+                workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
+                qDebug() << "Min value: " << m_likelihood.getMinVal();
+            }
+        }
     }
 }
 

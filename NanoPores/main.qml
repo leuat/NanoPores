@@ -6,8 +6,9 @@ import SimVis 1.0
 import MySimulator 1.0
 import WorkerData 1.0
 import Qt.labs.settings 1.0
-import QMLPlot 1.0
 import GeometryLibrary 1.0
+import QtCharts 2.0
+import DataSource 1.0
 
 Window {
     visible: true
@@ -20,6 +21,7 @@ Window {
         id: simulator1
         data: WorkerData {
             id: data1
+            workerName: "Left"
             enableCutting: false
             lblInfo: lblinfo1.text
         }
@@ -29,6 +31,7 @@ Window {
         id: simulator2
         data: WorkerData{
             id: data2
+            workerName: "Right"
             slice: sliderSlice.value
             sharpness: sliderSharpness.value
             enableCutting: true
@@ -41,7 +44,7 @@ Window {
 
             noiseParameters: NoiseParameters {
                 id: noiseParameters
-           }
+            }
         }
     }
 
@@ -149,11 +152,11 @@ Window {
 
             onAccepted: {
                 if (mode=="mode1") {
-                    data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                    data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString(); // open for visualizing
                     data2.command = "loaddata "+ fileDialogOpenOriginal.fileUrls.toString();
                 }
                 if (mode=="mode2") {
-                    data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                    data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString(); // open for visualizing
                 }
                 if (mode=="mode3") {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
@@ -179,28 +182,27 @@ Window {
 
             }
         }
-
     }
 
-       Figure {
-           id: figure
-           width: parent.width*0.5
-           height: parent.height*(1-splitWindow)
-           y: parent.height*splitWindow
-           fitData: true
-           fitExact: true
-           xLabel: "d [Å] "
-           yLabel: "P(d)"
-           title: "Scale"
-           LineGraph {
-               id: graph1
-               dataSource: LineGraphDataSource {
-                   id: dataSource1
-               }
-               width: 2
-               // style: Qt.DotLine
-           }
-       }
+//       Figure {
+//           id: figure
+//           width: parent.width*0.5
+//           height: parent.height*(1-splitWindow)
+//           y: parent.height*splitWindow
+//           fitData: true
+//           fitExact: true
+//           xLabel: "d [Å] "
+//           yLabel: "P(d)"
+//           title: "Scale"
+//           LineGraph {
+//               id: graph1
+//               dataSource: LineGraphDataSource {
+//                   id: dataSource1
+//               }
+//               width: 2
+//               // style: Qt.DotLine
+//           }
+//       }
 
 
     Visualizer {
@@ -272,6 +274,63 @@ Window {
         }
     }
 
+    Label {
+        id: lblinfo2
+        x: parent.width*0.5 + 5
+        y: parent.height - 30
+        color: Qt.rgba(1,1,1,1)
+        text: data2.lblInfo
+    }
+
+    Rectangle {
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        color: "white"
+
+        Figure {
+            id: figure
+            anchors.fill: parent
+            lineGraphs: [linegraph1]
+            LineGraph {
+                id: linegraph1
+                figure: figure
+                dataSource: DataSource {
+                    id: dataSource1
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        x: parent.width*0.5
+        color: "white"
+
+        Figure {
+            id: figure2
+            anchors.fill: parent
+            lineGraphs: [linegraph2, linegraph3]
+            LineGraph {
+                id: linegraph2
+                figure: figure2
+                dataSource: DataSource {
+                    id: dataSource2
+                }
+            }
+
+            LineGraph {
+                id: linegraph3
+                figure: figure2
+                dataSource: DataSource {
+                    id: dataSource3
+                }
+            }
+        }
+    }
+
     ParametersGUI {
         id: paramGUI
         width: 400
@@ -336,48 +395,6 @@ Window {
                 }
             }
         ]
-
-
-    }
-
-    Label {
-        id: lblinfo2
-        x: parent.width*0.5 + 5
-        y: parent.height/2 - 30
-        color: Qt.rgba(1,1,1,1)
-        text: data2.lblInfo
-    }
-
-    Figure {
-        id: figure2
-        //anchors.fill: parent
-        //color: "red"
-        width: parent.width*0.5
-        height: parent.height*(1-splitWindow)
-        y: parent.height*splitWindow
-        x: parent.width*0.5
-        fitData: true
-        fitExact: true
-        xLabel: "d [Å]"
-        yLabel: "P(d)"
-        title: ""
-        LineGraph {
-            id: graph2
-            dataSource: LineGraphDataSource {
-                id: dataSource2
-            }
-            width: 2
-            // style: Qt.DotLine
-        }
-        LineGraph {
-            id: graph3
-            dataSource: LineGraphDataSource {
-                id: dataSource3
-            }
-            width: 2
-            color: Qt.rgba(1,0,0,1);
-            // style: Qt.DotLine
-        }
     }
 }
 

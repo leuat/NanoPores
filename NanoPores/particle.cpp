@@ -101,8 +101,6 @@ void Particles::open(const char *filename) {
        }
        inputFile.close();
     }
-
-    qDebug() << "HORE";
 }
 
 void Particles::copyFrom(Particles &plist)
@@ -153,6 +151,7 @@ void Particles::calculatePorosity()
 }
 
 void Particles::save(const char* filename) {
+    qDebug() << "Saving file: " << filename;
     ofstream file;
 
     file.open(filename,std::ofstream::out);
