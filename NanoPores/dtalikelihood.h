@@ -14,9 +14,9 @@ private:
     Particles* m_originalParticles;
     QVector<QVector3D> m_dataParticles;
 
-    int m_numberOfRandomVectors = 8192;
+    int m_numberOfRandomVectors = 4096;
     int m_histogramBins = 100;
-    double m_cutoff = 50;
+    double m_cutoff = 25;
 
 public:
     DTALikelihood();

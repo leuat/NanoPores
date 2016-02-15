@@ -261,10 +261,14 @@ Window {
         height: parent.height*(1-splitWindow)
         y: parent.height*splitWindow
         color: "white"
+
         Figure {
             id: figure
             anchors.fill: parent
+            lineGraphs: [linegraph1]
             LineGraph {
+                id: linegraph1
+                figure: figure
                 dataSource: DataSource {
                     id: dataSource1
                 }
@@ -282,13 +286,18 @@ Window {
         Figure {
             id: figure2
             anchors.fill: parent
+            lineGraphs: [linegraph2, linegraph3]
             LineGraph {
+                id: linegraph2
+                figure: figure2
                 dataSource: DataSource {
                     id: dataSource2
                 }
             }
 
             LineGraph {
+                id: linegraph3
+                figure: figure2
                 dataSource: DataSource {
                     id: dataSource3
                 }

@@ -12,11 +12,21 @@ LineSeries {
         if(dataSource === undefined) {
             return;
         }
+
         for(var i in dataSource.xValues) {
             var x = dataSource.xValues[i]
             var y = dataSource.yValues[i]
             append(x,y)
         }
+        if(figure != undefined) {
+            figure.updateLimits()
+        }
+    }
+
+    onFigureChanged: {
+        if(figure === undefined) return;
+        axisX = figure.axisX
+        axisY = figure.axisY
     }
 
     onDataSourceChanged: {
