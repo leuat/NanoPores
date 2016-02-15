@@ -21,6 +21,7 @@ Window {
         id: simulator1
         data: WorkerData {
             id: data1
+            workerName: "Left"
             enableCutting: false
             lblInfo: lblinfo1.text
         }
@@ -30,6 +31,7 @@ Window {
         id: simulator2
         data: WorkerData{
             id: data2
+            workerName: "Right"
             slice: sliderSlice.value
             sharpness: sliderSharpness.value
             enableCutting: true
@@ -42,7 +44,7 @@ Window {
 
             noiseParameters: NoiseParameters {
                 id: noiseParameters
-           }
+            }
         }
     }
 
@@ -124,11 +126,11 @@ Window {
 
             onAccepted: {
                 if (mode=="mode1") {
-                    data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                    data1.fileToOpen = fileDialogOpenOriginal.fileUrls.toString(); // open for visualizing
                     data2.command = "loaddata "+ fileDialogOpenOriginal.fileUrls.toString();
                 }
                 if (mode=="mode2") {
-                    data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString();
+                    data2.fileToOpen = fileDialogOpenOriginal.fileUrls.toString(); // open for visualizing
                 }
                 if (mode=="mode3") {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();

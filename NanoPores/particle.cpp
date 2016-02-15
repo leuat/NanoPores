@@ -79,8 +79,6 @@ void Particles::open(const char *filename) {
        }
        inputFile.close();
     }
-
-    qDebug() << "HORE";
 }
 
 void Particles::copyFrom(Particles &plist)
@@ -102,6 +100,7 @@ void Particles::getVector3DList(QVector<QVector3D>& list)
 }
 
 void Particles::save(const char* filename) {
+    qDebug() << "Saving file: " << filename;
     ofstream file;
 
     file.open(filename,std::ofstream::out);

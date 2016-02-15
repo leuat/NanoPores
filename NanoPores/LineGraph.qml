@@ -8,8 +8,14 @@ LineSeries {
 
     function updateData() {
         clear()
-        append(0,0)
-        append(1,1)
+        if(dataSource === undefined) {
+            return;
+        }
+        for(var i in dataSource.xValues) {
+            var x = dataSource.xValues[i]
+            var y = dataSource.yValues[i]
+            append(x,y)
+        }
     }
 
     onDataSourceChanged: {

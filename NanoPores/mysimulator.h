@@ -18,6 +18,7 @@ class WorkerData : public QObject {
     Q_PROPERTY(DataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
     Q_PROPERTY(DataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
     Q_PROPERTY(DataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
+    Q_PROPERTY(QString workerName READ workerName WRITE setWorkerName NOTIFY workerNameChanged)
 
     Q_PROPERTY(float value1 READ value1 WRITE setValue1 NOTIFY value1Changed)
     Q_PROPERTY(float value2 READ value2 WRITE setValue2 NOTIFY value2Changed)
@@ -58,6 +59,7 @@ class WorkerData : public QObject {
     DataSource* m_dataSource = nullptr;
     DataSource* m_dataSource2 = nullptr;
     DataSource* m_dataSource3 = nullptr;
+    QString m_workerName;
 
 public:
     float value1() const
@@ -152,6 +154,11 @@ public:
     DataSource* dataSource3() const
     {
         return m_dataSource3;
+    }
+
+    QString workerName() const
+    {
+        return m_workerName;
     }
 
 public slots:
@@ -331,6 +338,15 @@ public slots:
         emit dataSource3Changed(dataSource3);
     }
 
+    void setWorkerName(QString workerName)
+    {
+        if (m_workerName == workerName)
+            return;
+
+        m_workerName = workerName;
+        emit workerNameChanged(workerName);
+    }
+
 signals:
     void value1Changed(float value1);
     void value2Changed(float value2);
@@ -351,6 +367,7 @@ signals:
     void dataSourceChanged(DataSource* dataSource);
     void dataSource2Changed(DataSource* dataSource2);
     void dataSource3Changed(DataSource* dataSource3);
+    void workerNameChanged(QString workerName);
 };
 
 
@@ -371,7 +388,7 @@ private:
     void addParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList);
     void openFile();
     void saveFile();
-    void manageCommands();
+    bool manageCommands();
     void calculateStatistics();
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
