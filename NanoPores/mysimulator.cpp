@@ -160,12 +160,14 @@ void MyWorker::saveStatistics()
 
     NoiseParameters *np = workerData->noiseParameters();
     m_likelihood.setOriginalInput(&m_particles);
-    m_likelihood.modelAnalysis(15, np);
+    m_likelihood.modelAnalysis(50, np);
 
+    while (m_likelihood.getDone()==false)
     if (m_likelihood.tick()) {
+        m_likelihood.getStatistics().average().SaveText("model_average.txt");
+        m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
+
     }
-    m_likelihood.getStatistics().average().SaveText("model_average.txt");
-    m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
 
 
 }
