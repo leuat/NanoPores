@@ -226,9 +226,7 @@ void MyWorker::work()
 {
     if (workerData!=nullptr) {
         //        workerData->Allocate();
-        if(workerData->workerName() == "Left") {
-            qDebug() << "Doing work on left...";
-        }
+
         constrainParticles(&m_spheres, nullptr);
     }
 }

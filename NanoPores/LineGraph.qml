@@ -5,6 +5,7 @@ import DataSource 1.0
 LineSeries {
     id: lineSeriesRoot
     property DataSource dataSource
+    property Figure figure
 
     function updateData() {
         clear()

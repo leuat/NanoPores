@@ -158,22 +158,6 @@ Window {
         }
     }
 
-    Rectangle {
-        width: parent.width*0.5
-        height: parent.height*(1-splitWindow)
-        y: parent.height*splitWindow
-        color: "white"
-        Figure {
-            id: figure
-            anchors.fill: parent
-            LineGraph {
-                dataSource: DataSource {
-                    id: dataSource1
-                }
-            }
-        }
-    }
-
 //       Figure {
 //           id: figure
 //           width: parent.width*0.5
@@ -264,6 +248,54 @@ Window {
         }
     }
 
+    Label {
+        id: lblinfo2
+        x: parent.width*0.5 + 5
+        y: parent.height - 30
+        color: Qt.rgba(1,1,1,1)
+        text: data2.lblInfo
+    }
+
+    Rectangle {
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        color: "white"
+        Figure {
+            id: figure
+            anchors.fill: parent
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource1
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        x: parent.width*0.5
+        color: "white"
+
+        Figure {
+            id: figure2
+            anchors.fill: parent
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource2
+                }
+            }
+
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource3
+                }
+            }
+        }
+    }
+
     ParametersGUI {
         id: paramGUI
         width: 400
@@ -328,72 +360,6 @@ Window {
                 }
             }
         ]
-
-
     }
-
-    Label {
-        id: lblinfo2
-        x: parent.width*0.5 + 5
-        y: parent.height - 30
-        color: Qt.rgba(1,1,1,1)
-        text: data2.lblInfo
-    }
-
-    Rectangle {
-        width: parent.width*0.5
-        height: parent.height*(1-splitWindow)
-        y: parent.height*splitWindow
-        x: parent.width*0.5
-        color: "white"
-
-        Figure {
-            id: figure2
-            anchors.fill: parent
-            LineGraph {
-                dataSource: DataSource {
-                    id: dataSource2
-                }
-            }
-
-            LineGraph {
-                dataSource: DataSource {
-                    id: dataSource3
-                }
-            }
-        }
-    }
-
-//    Figure {
-//        id: figure2
-//        //anchors.fill: parent
-//        //color: "red"
-//        width: parent.width*0.5
-//        height: parent.height*(1-splitWindow)
-//        y: parent.height*splitWindow
-//        x: parent.width*0.5
-//        fitData: true
-//        fitExact: true
-//        xLabel: "d [Å]"
-//        yLabel: "P(d)"
-//        title: ""
-//        LineGraph {
-//            id: graph2
-//            dataSource: LineGraphDataSource {
-//                id: dataSource2
-//            }
-//            width: 2
-//            // style: Qt.DotLine
-//        }
-//        LineGraph {
-//            id: graph3
-//            dataSource: LineGraphDataSource {
-//                id: dataSource3
-//            }
-//            width: 2
-//            color: Qt.rgba(1,0,0,1);
-//            // style: Qt.DotLine
-//        }
-//    }
 }
 
