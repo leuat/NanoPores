@@ -1,11 +1,11 @@
 TEMPLATE = app
 CONFIG += c++11
-QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -fopenmp
+#QMAKE_LFLAGS += -fopenmp
 #QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
 
 #CONFIG -=app_bundle
-QT += qml quick widgets opengl openglextensions svg
+QT += qml quick widgets opengl openglextensions charts svg
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lgsl
@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     GeometryLibrary/noise.cpp \
     GeometryLibrary/perlin.cpp \
     GeometryLibrary/simplex.cpp \
-    GeometryLibrary/simplexnoise.cpp
+    GeometryLibrary/simplexnoise.cpp \
+    datasource.cpp
 
 RESOURCES += qml.qrc
 
@@ -71,4 +72,5 @@ HEADERS += \
     GeometryLibrary/noise.h \
     GeometryLibrary/perlin.h \
     GeometryLibrary/simplex.h \
-    GeometryLibrary/simplexnoise.h
+    GeometryLibrary/simplexnoise.h \
+    datasource.h

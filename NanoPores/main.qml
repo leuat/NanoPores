@@ -6,8 +6,9 @@ import SimVis 1.0
 import MySimulator 1.0
 import WorkerData 1.0
 import Qt.labs.settings 1.0
-import QMLPlot 1.0
 import GeometryLibrary 1.0
+import QtCharts 2.0
+import DataSource 1.0
 
 Window {
     visible: true
@@ -153,28 +154,43 @@ Window {
 
             }
         }
-
     }
 
-       Figure {
-           id: figure
-           width: parent.width*0.5
-           height: parent.height*(1-splitWindow)
-           y: parent.height*splitWindow
-           fitData: true
-           fitExact: true
-           xLabel: "d [Å] "
-           yLabel: "P(d)"
-           title: "Scale"
-           LineGraph {
-               id: graph1
-               dataSource: LineGraphDataSource {
-                   id: dataSource1
-               }
-               width: 2
-               // style: Qt.DotLine
-           }
-       }
+    Rectangle {
+        width: parent.width*0.5
+        height: parent.height*(1-splitWindow)
+        y: parent.height*splitWindow
+        color: "white"
+        Figure {
+            id: figure
+            anchors.fill: parent
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource1
+                }
+            }
+        }
+    }
+
+//       Figure {
+//           id: figure
+//           width: parent.width*0.5
+//           height: parent.height*(1-splitWindow)
+//           y: parent.height*splitWindow
+//           fitData: true
+//           fitExact: true
+//           xLabel: "d [Å] "
+//           yLabel: "P(d)"
+//           title: "Scale"
+//           LineGraph {
+//               id: graph1
+//               dataSource: LineGraphDataSource {
+//                   id: dataSource1
+//               }
+//               width: 2
+//               // style: Qt.DotLine
+//           }
+//       }
 
 
     Visualizer {
@@ -322,36 +338,60 @@ Window {
         text: data2.lblInfo
     }
 
-    Figure {
-        id: figure2
-        //anchors.fill: parent
-        //color: "red"
+    Rectangle {
         width: parent.width*0.5
         height: parent.height*(1-splitWindow)
         y: parent.height*splitWindow
         x: parent.width*0.5
-        fitData: true
-        fitExact: true
-        xLabel: "d [Å]"
-        yLabel: "P(d)"
-        title: ""
-        LineGraph {
-            id: graph2
-            dataSource: LineGraphDataSource {
-                id: dataSource2
+        color: "white"
+
+        Figure {
+            id: figure2
+            anchors.fill: parent
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource2
+                }
             }
-            width: 2
-            // style: Qt.DotLine
-        }
-        LineGraph {
-            id: graph3
-            dataSource: LineGraphDataSource {
-                id: dataSource3
+
+            LineGraph {
+                dataSource: DataSource {
+                    id: dataSource3
+                }
             }
-            width: 2
-            color: Qt.rgba(1,0,0,1);
-            // style: Qt.DotLine
         }
     }
+
+//    Figure {
+//        id: figure2
+//        //anchors.fill: parent
+//        //color: "red"
+//        width: parent.width*0.5
+//        height: parent.height*(1-splitWindow)
+//        y: parent.height*splitWindow
+//        x: parent.width*0.5
+//        fitData: true
+//        fitExact: true
+//        xLabel: "d [Å]"
+//        yLabel: "P(d)"
+//        title: ""
+//        LineGraph {
+//            id: graph2
+//            dataSource: LineGraphDataSource {
+//                id: dataSource2
+//            }
+//            width: 2
+//            // style: Qt.DotLine
+//        }
+//        LineGraph {
+//            id: graph3
+//            dataSource: LineGraphDataSource {
+//                id: dataSource3
+//            }
+//            width: 2
+//            color: Qt.rgba(1,0,0,1);
+//            // style: Qt.DotLine
+//        }
+//    }
 }
 

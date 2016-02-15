@@ -4,5 +4,7 @@
         <file>ParametersGUI.qml</file>
         <file>ParameterSlider.qml</file>
         <file>Label.qml</file>
+        <file>Figure.qml</file>
+        <file>LineGraph.qml</file>
     </qresource>
 </RCC>

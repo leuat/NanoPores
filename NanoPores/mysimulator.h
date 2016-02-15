@@ -11,9 +11,13 @@
 #include "QMLPlot/linegraph.h"
 #include "dtalikelihood.h"
 #include "GeometryLibrary/models/noiseparameters.h"
+#include "datasource.h"
 
 class WorkerData : public QObject {
     Q_OBJECT
+    Q_PROPERTY(DataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
+    Q_PROPERTY(DataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
+    Q_PROPERTY(DataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
 
     Q_PROPERTY(float value1 READ value1 WRITE setValue1 NOTIFY value1Changed)
     Q_PROPERTY(float value2 READ value2 WRITE setValue2 NOTIFY value2Changed)
@@ -32,9 +36,6 @@ class WorkerData : public QObject {
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
     Q_PROPERTY(NoiseParameters* noiseParameters READ noiseParameters WRITE setNoiseParameters NOTIFY noiseParametersChanged)
 
-    Q_PROPERTY(LineGraphDataSource* dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
-    Q_PROPERTY(LineGraphDataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
-    Q_PROPERTY(LineGraphDataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
     float m_value1;
     float m_value2;
     float m_threshold;
@@ -47,16 +48,16 @@ class WorkerData : public QObject {
     bool m_enableCutting;
     QString m_fileToOpen;
     QString m_fileToSave;
-    LineGraphDataSource* m_dataSource;
+
     QString m_lblInfo;
     QString m_command;
     float m_skewScale;
     float m_skewAmplitude;
-    NoiseParameters* m_noiseParameters;
 
-    LineGraphDataSource* m_dataSource2;
-
-    LineGraphDataSource* m_dataSource3;
+    NoiseParameters* m_noiseParameters = nullptr;
+    DataSource* m_dataSource = nullptr;
+    DataSource* m_dataSource2 = nullptr;
+    DataSource* m_dataSource3 = nullptr;
 
 public:
     float value1() const
@@ -113,12 +114,6 @@ public:
         return m_fileToSave;
     }
 
-
-    LineGraphDataSource* dataSource() const
-    {
-        return m_dataSource;
-    }
-
     QString lblInfo() const
     {
         return m_lblInfo;
@@ -139,25 +134,30 @@ public:
         return m_skewAmplitude;
     }
 
-    LineGraphDataSource* dataSource2() const
+    NoiseParameters* noiseParameters() const
+    {
+        return m_noiseParameters;
+    }
+
+    DataSource* dataSource() const
+    {
+        return m_dataSource;
+    }
+
+    DataSource* dataSource2() const
     {
         return m_dataSource2;
     }
 
-    LineGraphDataSource* dataSource3() const
+    DataSource* dataSource3() const
     {
         return m_dataSource3;
-  }
-    NoiseParameters* noiseParameters() const
-    {
-        return m_noiseParameters;
     }
 
 public slots:
     void Allocate() {
         if (initialized)
             return;
- //       m_dataSource = new LineGraphDataSource();
         initialized = true;
        }
 
@@ -259,16 +259,6 @@ public slots:
         emit fileToSaveChanged(fileToSave);
     }
 
-
-    void setDataSource(LineGraphDataSource* dataSource)
-    {
-        if (m_dataSource == dataSource)
-            return;
-
-        m_dataSource = dataSource;
-        emit dataSourceChanged(dataSource);
-    }
-
     void setLblInfo(QString lblInfo)
     {
         if (m_lblInfo == lblInfo)
@@ -305,7 +295,25 @@ public slots:
         emit skewAmplitudeChanged(skewAmplitude);
     }
 
-    void setDataSource2(LineGraphDataSource* dataSource2)
+    void setNoiseParameters(NoiseParameters* noiseParameters)
+    {
+        if (m_noiseParameters == noiseParameters)
+            return;
+
+        m_noiseParameters = noiseParameters;
+        emit noiseParametersChanged(noiseParameters);
+    }
+
+    void setDataSource(DataSource* dataSource)
+    {
+        if (m_dataSource == dataSource)
+            return;
+
+        m_dataSource = dataSource;
+        emit dataSourceChanged(dataSource);
+    }
+
+    void setDataSource2(DataSource* dataSource2)
     {
         if (m_dataSource2 == dataSource2)
             return;
@@ -314,21 +322,13 @@ public slots:
         emit dataSource2Changed(dataSource2);
     }
 
-    void setDataSource3(LineGraphDataSource* dataSource3)
+    void setDataSource3(DataSource* dataSource3)
     {
         if (m_dataSource3 == dataSource3)
             return;
 
         m_dataSource3 = dataSource3;
         emit dataSource3Changed(dataSource3);
-    }
-    void setNoiseParameters(NoiseParameters* noiseParameters)
-    {
-        if (m_noiseParameters == noiseParameters)
-            return;
-
-        m_noiseParameters = noiseParameters;
-        emit noiseParametersChanged(noiseParameters);
     }
 
 signals:
@@ -343,14 +343,14 @@ signals:
     void enableCuttingChanged(bool enableCutting);
     void fileToOpenChanged(QString fileToOpen);
     void fileToSaveChanged(QString fileToSave);
-    void dataSourceChanged(LineGraphDataSource* dataSource);
     void lblInfoChanged(QString lblInfo);
     void commandChanged(QString command);
     void skewScaleChanged(float skewScale);
     void skewAmplitudeChanged(float skewAmplitude);
-    void dataSource2Changed(LineGraphDataSource* dataSource2);
-    void dataSource3Changed(LineGraphDataSource* dataSource3);
     void noiseParametersChanged(NoiseParameters* noiseParameters);
+    void dataSourceChanged(DataSource* dataSource);
+    void dataSource2Changed(DataSource* dataSource2);
+    void dataSource3Changed(DataSource* dataSource3);
 };
 
 

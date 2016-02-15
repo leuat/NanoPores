@@ -16,7 +16,7 @@ private:
 
     int m_numberOfRandomVectors = 8192;
     int m_histogramBins = 100;
-    double m_cutoff = 20;
+    double m_cutoff = 50;
 
 public:
     DTALikelihood();

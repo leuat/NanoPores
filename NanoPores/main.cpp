@@ -1,20 +1,16 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QtQml>
 #include "mysimulator.h"
-#include "QMLPlot/figure.h"
-#include "QMLPlot/linegraph.h"
+#include "datasource.h"
 #include "GeometryLibrary/models/noiseparameters.h"
 int main(int argc, char *argv[])
 {
     qmlRegisterType<MySimulator>("MySimulator", 1, 0, "MySimulator");
     qmlRegisterType<WorkerData>("WorkerData", 1, 0, "WorkerData");
-    qmlRegisterType<Figure>("QMLPlot", 1,0,"Figure");
-    qmlRegisterType<LineGraph>("QMLPlot", 1,0,"LineGraph");
-    qmlRegisterType<LineGraphDataSource>("QMLPlot", 1,0,"LineGraphDataSource");
     qmlRegisterType<NoiseParameters>("GeometryLibrary",1,0,"NoiseParameters");
-
-    QGuiApplication app(argc, argv);
+    qmlRegisterType<DataSource>("DataSource", 1, 0, "DataSource");
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
