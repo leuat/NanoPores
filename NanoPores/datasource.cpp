@@ -29,6 +29,7 @@ float DataSource::xMin()
     for(const float &x : m_xValuesRaw) {
         xMin = std::min(x, xMin);
     }
+    return xMin;
 }
 
 float DataSource::xMax()
@@ -37,6 +38,7 @@ float DataSource::xMax()
     for(const float &x : m_xValuesRaw) {
         xMax = std::max(x, xMax);
     }
+    return xMax;
 }
 
 float DataSource::yMin()
@@ -45,6 +47,7 @@ float DataSource::yMin()
     for(const float &y : m_yValuesRaw) {
         yMin = std::min(y, yMin);
     }
+    return yMin;
 }
 
 float DataSource::yMax()
@@ -53,6 +56,7 @@ float DataSource::yMax()
     for(const float &y : m_yValuesRaw) {
         yMax = std::max(y, yMax);
     }
+    return yMax;
 }
 
 void DataSource::setPoints(QVector<QPointF> points, bool normalized)
