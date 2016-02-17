@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += c++11
-#QMAKE_CXXFLAGS += -fopenmp
-#QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 #QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
 
 #CONFIG -=app_bundle
