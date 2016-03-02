@@ -12,7 +12,8 @@ Row {
     property real labelWidth: 80
     property bool buttonVisible: true
     spacing: 5
-    width: 400
+    height: 20
+    width: parent.width
 
     Label {
         text: name+' '
@@ -27,15 +28,6 @@ Row {
 
     Slider {
         id: mySlider
-        width: rootItem.width - 2*labelWidth - rootItem.spacing*3
-    }
-    Button {
-        width: labelWidth/2;
-        visible: rootItem.buttonVisible
-        text: "F"
-        onClicked: {
-            data2.command = "statistics " + name
-        }
-
+        width: rootItem.width - 1.5*labelWidth - rootItem.spacing*3
     }
 }

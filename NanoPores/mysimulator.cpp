@@ -3,10 +3,6 @@
 #include <iostream>
 #include "io.h"
 #include "distancetoatom.h"
-#include "GeometryLibrary/models/noiseparameters.h"
-#include "GeometryLibrary/models/multifractalparameters.h"
-
-#include "GeometryLibrary/geometrylibrary.h"
 #include "GeometryLibrary/noise.h"
 using namespace std;
 
@@ -14,6 +10,20 @@ MySimulator::MySimulator()
 {
     //   if (m_data!=nullptr)
     //     m_data->Allocate();
+}
+
+WorkerData *MySimulator::data() const
+{
+    return m_data;
+}
+
+void MySimulator::setData(WorkerData *data)
+{
+    if (m_data == data)
+        return;
+
+    m_data = data;
+    emit dataChanged(data);
 }
 
 SimulatorWorker *MySimulator::createWorker()
@@ -69,16 +79,13 @@ bool MyWorker::manageCommands()
         QStringList cmd = workerData->command().toLower().split(" ");
         if (cmd[0]=="statistics") {
             qDebug() << workerData->workerName() << "Starting analysis on parameter: " << cmd[1];
-            //calculateStatistics();
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << workerData->workerName() << "ZERO particles in data input!";
                 workerData->setCommand("");
                 return false;
             }
-            Parameters* p = workerData->noiseParameters();
-
-            m_likelihood.bruteForce1D(10, p->getParameter(cmd[1]), p);
+            m_likelihood.bruteForce1D(10, cmd[1], workerData->model());
         } else if (cmd[0]=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
@@ -146,26 +153,19 @@ void MyWorker::saveStatistics()
     dataDTA.SaveText(dir + "dta_data.txt");
     modelDTA.SaveText(dir +"dta_model.txt");
 
-    NoiseParameters *np = workerData->noiseParameters();
     m_likelihood.setOriginalInput(&m_particles);
-    m_likelihood.modelAnalysis(50, np);
+    m_likelihood.modelAnalysis(50, workerData->model());
 
     while (m_likelihood.getDone()==false)
         if (m_likelihood.tick()) {
             m_likelihood.getStatistics().average().SaveText("model_average.txt");
             m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
-
         }
-
-
 }
 
 void MyWorker::calculateModelStatistics()
 {
-    NoiseParameters *np = workerData->noiseParameters();
-    m_likelihood.modelAnalysis(15, np);
-
-
+    m_likelihood.modelAnalysis(15, workerData->model());
 }
 
 
@@ -182,15 +182,11 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         return;
     }
 
-    m_particles.BoundingBox();
+    m_particles.boundingBox();
     if (workerData->enableCutting()) {
-        NoiseParameters *np = workerData->noiseParameters();
-        if(!np) {
-            return;
-        }
+        Model *model = workerData->model();
+        if(!model) return;
 
-        GeometryLibrary gl;
-        gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, np);
         const int numberOfParticles = m_particles.getParticles().size();
         QVector<bool> shouldBeAdded;
         shouldBeAdded.resize(numberOfParticles);
@@ -201,10 +197,10 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
             Particle *pos = m_particles.getParticles()[i];
             const QVector3D realPos = pos->getPos();
             QVector3D scaledPos = realPos/m_particles.getBoundsSize()*10;
-            if (!(realPos[0] + m_particles.getBoundsSize()*workerData->sharpness()<m_particles.getBoundsMin()[0]*workerData->slice() ||
-                  realPos[0] + m_particles.getBoundsSize()*workerData->sharpness()>m_particles.getBoundsMax()[0]*workerData->slice()))
+            if (!(realPos[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()<m_particles.getBoundsMin()[0]*workerData->slice() ||
+                  realPos[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()>m_particles.getBoundsMax()[0]*workerData->slice()))
             {
-                if (!gl.isInVoid(scaledPos)) {
+                if (!model->isInVoid(scaledPos)) {
                     shouldBeAdded[i] = true;
                 }
             }
@@ -257,18 +253,18 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         saveFile();
         bool everythingOK = manageCommands();
 
-        if(everythingOK) {
-            if (m_likelihood.tick()) {
-                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
-                workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
-                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
-            }
-            if (m_likelihood.getDone()){
-                m_likelihood.setDone(false);
-                workerData->dataSource2()->setPoints(m_likelihood.model().toQVector());
-                qDebug() << "Min value: " << m_likelihood.getMinVal();
-            }
-        }
+//        if(everythingOK) {
+//            if (m_likelihood.tick()) {
+//                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
+//                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
+//                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+//            }
+//            if (m_likelihood.getDone()){
+//                m_likelihood.setDone(false);
+//                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
+//                qDebug() << "Min value: " << m_likelihood.getMinVal();
+//            }
+//        }
     }
 }
 
@@ -277,4 +273,178 @@ void MyWorker::work()
     if (workerData!=nullptr) {
         constrainParticles(&m_spheres, nullptr);
     }
+}
+
+float WorkerData::slice() const
+{
+    return m_slice;
+}
+
+bool WorkerData::enableCutting() const
+{
+    return m_enableCutting;
+}
+
+QString WorkerData::fileToOpen() const
+{
+    return m_fileToOpen;
+}
+
+QString WorkerData::fileToSave() const
+{
+    return m_fileToSave;
+}
+
+QString WorkerData::lblInfo() const
+{
+    return m_lblInfo;
+}
+
+QString WorkerData::command() const
+{
+    return m_command;
+}
+
+DataSource *WorkerData::dataSource() const
+{
+    return m_dataSource;
+}
+
+DataSource *WorkerData::dataSource2() const
+{
+    return m_dataSource2;
+}
+
+DataSource *WorkerData::dataSource3() const
+{
+    return m_dataSource3;
+}
+
+QString WorkerData::workerName() const
+{
+    return m_workerName;
+}
+
+Model *WorkerData::model() const
+{
+    return m_model;
+}
+
+float WorkerData::sliceTranslate() const
+{
+    return m_sliceTranslate;
+}
+
+void WorkerData::allocate() {
+    if (initialized)
+        return;
+    initialized = true;
+}
+
+void WorkerData::setSlice(float slice)
+{
+    if (m_slice == slice)
+        return;
+
+    m_slice = slice;
+    emit sliceChanged(slice);
+}
+
+void WorkerData::setEnableCutting(bool enableCutting)
+{
+    if (m_enableCutting == enableCutting)
+        return;
+
+    m_enableCutting = enableCutting;
+    emit enableCuttingChanged(enableCutting);
+}
+
+void WorkerData::setFileToOpen(QString fileToOpen)
+{
+    if (m_fileToOpen == fileToOpen)
+        return;
+
+    m_fileToOpen = fileToOpen;
+    emit fileToOpenChanged(fileToOpen);
+}
+
+void WorkerData::setFileToSave(QString fileToSave)
+{
+    if (m_fileToSave == fileToSave)
+        return;
+
+    m_fileToSave = fileToSave;
+    emit fileToSaveChanged(fileToSave);
+}
+
+void WorkerData::setLblInfo(QString lblInfo)
+{
+    if (m_lblInfo == lblInfo)
+        return;
+
+    m_lblInfo = lblInfo;
+    emit lblInfoChanged(lblInfo);
+}
+
+void WorkerData::setCommand(QString command)
+{
+    if (m_command == command)
+        return;
+
+    m_command = command;
+    emit commandChanged(command);
+}
+
+void WorkerData::setDataSource(DataSource *dataSource)
+{
+    if (m_dataSource == dataSource)
+        return;
+
+    m_dataSource = dataSource;
+    emit dataSourceChanged(dataSource);
+}
+
+void WorkerData::setDataSource2(DataSource *dataSource2)
+{
+    if (m_dataSource2 == dataSource2)
+        return;
+
+    m_dataSource2 = dataSource2;
+    emit dataSource2Changed(dataSource2);
+}
+
+void WorkerData::setDataSource3(DataSource *dataSource3)
+{
+    if (m_dataSource3 == dataSource3)
+        return;
+
+    m_dataSource3 = dataSource3;
+    emit dataSource3Changed(dataSource3);
+}
+
+void WorkerData::setWorkerName(QString workerName)
+{
+    if (m_workerName == workerName)
+        return;
+
+    m_workerName = workerName;
+    emit workerNameChanged(workerName);
+}
+
+void WorkerData::setModel(Model *model)
+{
+    if (m_model == model)
+        return;
+
+    m_model = model;
+    emit modelChanged(model);
+}
+
+void WorkerData::setSliceTranslate(float sliceTranslate)
+{
+    if (m_sliceTranslate == sliceTranslate)
+        return;
+
+    m_sliceTranslate = sliceTranslate;
+    emit sliceTranslateChanged(sliceTranslate);
 }

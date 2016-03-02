@@ -1,8 +1,6 @@
 #include "dtalikelihood.h"
-#include "GeometryLibrary/geometrylibrary.h"
-#include "GeometryLibrary/noise.h"
 #include <QDebug>
-
+#include "GeometryLibrary/models/model.h"
 
 int DTALikelihood::voxelsPerDimension() const
 {
@@ -61,21 +59,16 @@ void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& grap
 
 }
 
-void DTALikelihood::calculateModel(Parameters *p)
+void DTALikelihood::calculateModel(Model *model)
 {
-    GeometryLibrary gl;
-    gl.initialize(GeometryLibrary::GeometryModel::Regular, Noise::Simplex, p);
     m_modelParticles.clear();
-//    qDebug() << "Original particles count: " << m_originalParticles->size();
-    m_originalParticles->BoundingBox();
+    m_originalParticles->boundingBox();
 
     for (Particle* pos : m_originalParticles->getParticles()) {
-        QVector3D p = pos->getPos()/m_originalParticles->getBoundsSize()*10;
-            if (!gl.isInVoid(p))
-                m_modelParticles.append(pos->getPos());
-       }
-
-  //  qDebug() << "Model particles count: " << m_modelParticles.size();
-
-    calculateStatistics(m_modelParticles,m_model);
+        QVector3D scaledPos = pos->getPos()/m_originalParticles->getBoundsSize()*10;
+        if (!model->isInVoid(scaledPos)) {
+            m_modelParticles.append(pos->getPos());
+        }
+    }
+    calculateStatistics(m_modelParticles,m_modelData);
 }

@@ -3,13 +3,17 @@
 #include <QtQml>
 #include "mysimulator.h"
 #include "datasource.h"
-#include "GeometryLibrary/models/noiseparameters.h"
+#include "GeometryLibrary/parameters.h"
+#include "GeometryLibrary/models/models.h"
 int main(int argc, char *argv[])
 {
     qmlRegisterType<MySimulator>("MySimulator", 1, 0, "MySimulator");
     qmlRegisterType<WorkerData>("WorkerData", 1, 0, "WorkerData");
-    qmlRegisterType<NoiseParameters>("GeometryLibrary",1,0,"NoiseParameters");
     qmlRegisterType<DataSource>("DataSource", 1, 0, "DataSource");
+    qmlRegisterUncreatableType<Model>("GeometryLibrary", 1, 0, "Model",
+                                          "Cannot create abstract type Model. This must be subclassed.");
+    qmlRegisterType<RegularNoiseModel>("GeometryLibrary", 1, 0, "RegularNoiseModel");
+    qmlRegisterType<Parameters>("GeometryLibrary",1,0,"Parameters");
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;

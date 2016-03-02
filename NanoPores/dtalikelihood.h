@@ -34,12 +34,8 @@ public:
     }
 
     LGraph calculateStatisticsDirect(Particles& particles);
-
     void calculateStatistics(QVector<QVector3D>& particleList, LGraph& graph);
-
-    void calculateModel(Parameters* p) override;
-
-
+    void calculateModel(class Model *modelData) override;
     QVector<QPointF> currentModel() const;
     QVector<QPointF> currentData() const;
     int voxelsPerDimension() const;

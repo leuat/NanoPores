@@ -9,8 +9,8 @@
 #include <QMap>
 #include "particle.h"
 #include "QMLPlot/linegraph.h"
+#include "GeometryLibrary/models/models.h"
 #include "dtalikelihood.h"
-#include "GeometryLibrary/models/noiseparameters.h"
 #include "datasource.h"
 
 class WorkerData : public QObject {
@@ -19,32 +19,18 @@ class WorkerData : public QObject {
     Q_PROPERTY(DataSource* dataSource2 READ dataSource2 WRITE setDataSource2 NOTIFY dataSource2Changed)
     Q_PROPERTY(DataSource* dataSource3 READ dataSource3 WRITE setDataSource3 NOTIFY dataSource3Changed)
     Q_PROPERTY(QString workerName READ workerName WRITE setWorkerName NOTIFY workerNameChanged)
-
-    Q_PROPERTY(float value1 READ value1 WRITE setValue1 NOTIFY value1Changed)
-    Q_PROPERTY(float value2 READ value2 WRITE setValue2 NOTIFY value2Changed)
-    Q_PROPERTY(float threshold READ threshold WRITE setTreshold NOTIFY thresholdChanged)
+    Q_PROPERTY(Model* model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(float slice READ slice WRITE setSlice NOTIFY sliceChanged)
-    Q_PROPERTY(float persistence READ persistence WRITE setPersistence NOTIFY persistenceChanged)
-    Q_PROPERTY(float sharpness READ sharpness WRITE setSharpness NOTIFY sharpnessChanged)
-    Q_PROPERTY(float abs READ abs WRITE setAbs NOTIFY absChanged)
-    Q_PROPERTY(float invert READ invert WRITE setInvert NOTIFY invertChanged)
-    Q_PROPERTY(float skewScale READ skewScale WRITE setSkewScale NOTIFY skewScaleChanged)
-    Q_PROPERTY(float skewAmplitude READ skewAmplitude WRITE setSkewAmplitude NOTIFY skewAmplitudeChanged)
+    Q_PROPERTY(float sliceTranslate READ sliceTranslate WRITE setSliceTranslate NOTIFY sliceTranslateChanged)
     Q_PROPERTY(bool enableCutting READ enableCutting WRITE setEnableCutting NOTIFY enableCuttingChanged)
     Q_PROPERTY(QString fileToOpen READ fileToOpen WRITE setFileToOpen NOTIFY fileToOpenChanged)
     Q_PROPERTY(QString fileToSave READ fileToSave WRITE setFileToSave NOTIFY fileToSaveChanged)
     Q_PROPERTY(QString lblInfo READ lblInfo WRITE setLblInfo NOTIFY lblInfoChanged)
     Q_PROPERTY(QString command READ command WRITE setCommand NOTIFY commandChanged)
-    Q_PROPERTY(NoiseParameters* noiseParameters READ noiseParameters WRITE setNoiseParameters NOTIFY noiseParametersChanged)
-    float m_value1;
-    float m_value2;
-    float m_threshold;
-    float m_slice;
+
+    Model* m_model = nullptr;
     bool initialized = false;
-    float m_persistence;
-    float m_sharpness;
-    float m_abs;
-    float m_invert;
+    float m_slice;
     bool m_enableCutting;
     QString m_fileToOpen;
     QString m_fileToSave;
@@ -54,333 +40,67 @@ class WorkerData : public QObject {
     float m_skewScale;
     float m_skewAmplitude;
 
-    NoiseParameters* m_noiseParameters = nullptr;
     DataSource* m_dataSource = nullptr;
     DataSource* m_dataSource2 = nullptr;
     DataSource* m_dataSource3 = nullptr;
-    QString m_workerName;
+    QString m_workerName; 
+    float m_sliceTranslate;
 
 public:
-    float value1() const
-    {
-        return m_value1;
-    }
-    float value2() const
-    {
-        return m_value2;
-    }
-
-    float threshold() const
-    {
-        return m_threshold;
-    }
-
-    float slice() const
-    {
-        return m_slice;
-    }
-
-    float persistence() const
-    {
-        return m_persistence;
-    }
-
-    float sharpness() const
-    {
-        return m_sharpness;
-    }
-
-    float abs() const
-    {
-        return m_abs;
-    }
-
-    float invert() const
-    {
-        return m_invert;
-    }
-
-    bool enableCutting() const
-    {
-        return m_enableCutting;
-    }
-
-    QString fileToOpen() const
-    {
-        return m_fileToOpen;
-    }
-
-    QString fileToSave() const
-    {
-        return m_fileToSave;
-    }
-
-    QString lblInfo() const
-    {
-        return m_lblInfo;
-    }
-
-    QString command() const
-    {
-        return m_command;
-    }
-
-    float skewScale() const
-    {
-        return m_skewScale;
-    }
-
-    float skewAmplitude() const
-    {
-        return m_skewAmplitude;
-    }
-
-    NoiseParameters* noiseParameters() const
-    {
-        return m_noiseParameters;
-    }
-
-    DataSource* dataSource() const
-    {
-        return m_dataSource;
-    }
-
-    DataSource* dataSource2() const
-    {
-        return m_dataSource2;
-    }
-
-    DataSource* dataSource3() const
-    {
-        return m_dataSource3;
-    }
-
-    QString workerName() const
-    {
-        return m_workerName;
-    }
+    float slice() const;
+    bool enableCutting() const;
+    QString fileToOpen() const;
+    QString fileToSave() const;
+    QString lblInfo() const;
+    QString command() const;
+    DataSource* dataSource() const;
+    DataSource* dataSource2() const;
+    DataSource* dataSource3() const;
+    QString workerName() const;
+    Model* model() const;
+    float sliceTranslate() const;
 
 public slots:
-    void Allocate() {
-        if (initialized)
-            return;
-        initialized = true;
-       }
-
-    void setValue1(float value1)
-    {
-        if (m_value1 == value1)
-            return;
-
-        m_value1 = value1;
-        emit value1Changed(value1);
-    }
-    void setValue2(float value2)
-    {
-        if (m_value2 == value2)
-            return;
-
-        m_value2 = value2;
-        emit value2Changed(value2);
-    }
-
-    void setTreshold(float threshold)
-    {
-        if (m_threshold == threshold)
-            return;
-
-        m_threshold = threshold;
-        emit thresholdChanged(threshold);
-    }
-
-    void setSlice(float slice)
-    {
-        if (m_slice == slice)
-            return;
-
-        m_slice = slice;
-        emit sliceChanged(slice);
-    }
-
-    void setPersistence(float persistence)
-    {
-        if (m_persistence == persistence)
-            return;
-
-        m_persistence = persistence;
-        emit persistenceChanged(persistence);
-    }
-
-    void setSharpness(float sharpness)
-    {
-        if (m_sharpness == sharpness)
-            return;
-
-        m_sharpness = sharpness;
-        emit sharpnessChanged(sharpness);
-    }
-
-    void setAbs(float abs)
-    {
-        if (m_abs == abs)
-            return;
-
-        m_abs = abs;
-        emit absChanged(abs);
-    }
-
-    void setInvert(float invert)
-    {
-        if (m_invert == invert)
-            return;
-
-        m_invert = invert;
-        emit invertChanged(invert);
-    }
-
-    void setEnableCutting(bool enableCutting)
-    {
-        if (m_enableCutting == enableCutting)
-            return;
-
-        m_enableCutting = enableCutting;
-        emit enableCuttingChanged(enableCutting);
-    }
-
-    void setFileToOpen(QString fileToOpen)
-    {
-        if (m_fileToOpen == fileToOpen)
-            return;
-
-        m_fileToOpen = fileToOpen;
-        emit fileToOpenChanged(fileToOpen);
-    }
-
-    void setFileToSave(QString fileToSave)
-    {
-        if (m_fileToSave == fileToSave)
-            return;
-
-        m_fileToSave = fileToSave;
-        emit fileToSaveChanged(fileToSave);
-    }
-
-    void setLblInfo(QString lblInfo)
-    {
-        if (m_lblInfo == lblInfo)
-            return;
-
-        m_lblInfo = lblInfo;
-        emit lblInfoChanged(lblInfo);
-    }
-
-    void setCommand(QString command)
-    {
-        if (m_command == command)
-            return;
-
-        m_command = command;
-        emit commandChanged(command);
-    }
-
-    void setSkewScale(float skewScale)
-    {
-        if (m_skewScale == skewScale)
-            return;
-
-        m_skewScale = skewScale;
-        emit skewScaleChanged(skewScale);
-    }
-
-    void setSkewAmplitude(float skewAmplitude)
-    {
-        if (m_skewAmplitude == skewAmplitude)
-            return;
-
-        m_skewAmplitude = skewAmplitude;
-        emit skewAmplitudeChanged(skewAmplitude);
-    }
-
-    void setNoiseParameters(NoiseParameters* noiseParameters)
-    {
-        if (m_noiseParameters == noiseParameters)
-            return;
-
-        m_noiseParameters = noiseParameters;
-        emit noiseParametersChanged(noiseParameters);
-    }
-
-    void setDataSource(DataSource* dataSource)
-    {
-        if (m_dataSource == dataSource)
-            return;
-
-        m_dataSource = dataSource;
-        emit dataSourceChanged(dataSource);
-    }
-
-    void setDataSource2(DataSource* dataSource2)
-    {
-        if (m_dataSource2 == dataSource2)
-            return;
-
-        m_dataSource2 = dataSource2;
-        emit dataSource2Changed(dataSource2);
-    }
-
-    void setDataSource3(DataSource* dataSource3)
-    {
-        if (m_dataSource3 == dataSource3)
-            return;
-
-        m_dataSource3 = dataSource3;
-        emit dataSource3Changed(dataSource3);
-    }
-
-    void setWorkerName(QString workerName)
-    {
-        if (m_workerName == workerName)
-            return;
-
-        m_workerName = workerName;
-        emit workerNameChanged(workerName);
-    }
+    void allocate();
+    void setSlice(float slice);
+    void setEnableCutting(bool enableCutting);
+    void setFileToOpen(QString fileToOpen);
+    void setFileToSave(QString fileToSave);
+    void setLblInfo(QString lblInfo);
+    void setCommand(QString command);
+    void setDataSource(DataSource* dataSource);
+    void setDataSource2(DataSource* dataSource2);
+    void setDataSource3(DataSource* dataSource3);
+    void setWorkerName(QString workerName);
+    void setModel(Model* model);
+    void setSliceTranslate(float sliceTranslate);
 
 signals:
-    void value1Changed(float value1);
-    void value2Changed(float value2);
-    void thresholdChanged(float threshold);
     void sliceChanged(float slice);
-    void persistenceChanged(float persistence);
-    void sharpnessChanged(float sharpness);
-    void absChanged(float abs);
-    void invertChanged(float invert);
     void enableCuttingChanged(bool enableCutting);
     void fileToOpenChanged(QString fileToOpen);
     void fileToSaveChanged(QString fileToSave);
     void lblInfoChanged(QString lblInfo);
     void commandChanged(QString command);
-    void skewScaleChanged(float skewScale);
-    void skewAmplitudeChanged(float skewAmplitude);
-    void noiseParametersChanged(NoiseParameters* noiseParameters);
     void dataSourceChanged(DataSource* dataSource);
     void dataSource2Changed(DataSource* dataSource2);
     void dataSource3Changed(DataSource* dataSource3);
     void workerNameChanged(QString workerName);
+    void modelChanged(Model* model);
+    void sliceTranslateChanged(float sliceTranslate);
 };
-
 
 class MyWorker : public SimulatorWorker
 {
     Q_OBJECT
 
 private:
-    WorkerData* workerData;
+    WorkerData* workerData = nullptr;
+    Parameters* m_params = nullptr;
     Particles m_particles;
     Particles m_dataParticles;
     Spheres m_spheres;
     DTALikelihood m_likelihood;
-    NoiseParameters* m_params = nullptr;
     float m_porosity = 0;
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
@@ -419,26 +139,10 @@ class MySimulator : public Simulator
 
 public:
     MySimulator();
-
-    // Simulator interface
-
-
-    WorkerData* data() const
-    {
-        return m_data;
-    }
+    WorkerData* data() const;
 
 public slots:
-
-
-    void setData(WorkerData* data)
-    {
-        if (m_data == data)
-            return;
-
-        m_data = data;
-        emit dataChanged(data);
-    }
+    void setData(WorkerData* data);
 
 signals:
     void dataChanged(WorkerData* data);

@@ -17,6 +17,10 @@ Window {
 
     property real splitWindow : 0.6
 
+    RegularNoiseModel {
+        id: regularNoiseModel
+    }
+
     MySimulator {
         id: simulator1
         data: WorkerData {
@@ -33,18 +37,13 @@ Window {
             id: data2
             workerName: "Right"
             slice: sliderSlice.value
-            sharpness: sliderSharpness.value
+            sliceTranslate: sliderTranslate.value
             enableCutting: true
-
             dataSource: dataSource1
             dataSource2: dataSource2
             dataSource3: dataSource3
-
             lblInfo: lblinfo2.text
-
-            noiseParameters: NoiseParameters {
-                id: noiseParameters
-            }
+            model: regularNoiseModel
         }
     }
 
@@ -341,7 +340,7 @@ Window {
         radius: 10
         textColor: "white"
         labelWidth: 100
-        parameters: noiseParameters
+        parameters: data2.model.parameters
         additional: [
             ParameterSlider {
                 id: sliderSize
@@ -366,7 +365,7 @@ Window {
                 buttonVisible: false
             },
             ParameterSlider {
-                id: sliderSharpness
+                id: sliderTranslate
                 name: "Translate"
                 minimumValue: -1
                 maximumValue: 1

@@ -103,7 +103,7 @@ public:
 
     void calculatePorosity();
 
-    void BoundingBox( ) {
+    void boundingBox( ) {
         float LARGE = 1E20;
 
         boundsMin = QVector3D(LARGE, LARGE, LARGE);

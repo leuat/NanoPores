@@ -127,7 +127,7 @@ void Particles::calculatePorosity()
     if (N==0)
         return;
     int cnt = 1;
-    BoundingBox();
+    boundingBox();
     float l = (boundsMax - boundsMin).length()/135.0;
     qDebug() << "l = " << l;
     for (int i=0;i<N;i++) {

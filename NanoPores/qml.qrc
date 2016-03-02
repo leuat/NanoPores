@@ -6,5 +6,7 @@
         <file>Label.qml</file>
         <file>Figure.qml</file>
         <file>LineGraph.qml</file>
+        <file>ParameterSwitch.qml</file>
+        <file>ParameterTextfield.qml</file>
     </qresource>
 </RCC>
