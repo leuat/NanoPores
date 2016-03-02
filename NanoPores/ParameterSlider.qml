@@ -28,6 +28,16 @@ Row {
 
     Slider {
         id: mySlider
-        width: rootItem.width - 1.5*labelWidth - rootItem.spacing*3
+        width: rootItem.width - 2.0*labelWidth - rootItem.spacing*3
+    }
+
+    Button {
+        width: labelWidth/2;
+        visible: rootItem.buttonVisible
+        text: "F"
+        onClicked: {
+            data2.command = "statistics " + name
+        }
+
     }
 }

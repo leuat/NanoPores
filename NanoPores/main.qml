@@ -161,7 +161,7 @@ Window {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
                 }
                 if (mode==="parameters") {
-                    noiseParameters.load(fileDialogOpenOriginal.fileUrls.toString())
+                    data2.model.parameters.load(fileDialogOpenOriginal.fileUrls.toString())
                 }
             }
         }
@@ -174,7 +174,7 @@ Window {
 
             onAccepted: {
                 if(mode==="parameters") {
-                    noiseParameters.save(fileDialogSave.fileUrls.toString())
+                    data2.model.parameters.save(fileDialogSave.fileUrls.toString())
                 } else if(mode==="data") {
                     data2.fileToSave = fileDialogSave.fileUrls.toString();
                 }
@@ -182,27 +182,6 @@ Window {
             }
         }
     }
-
-//       Figure {
-//           id: figure
-//           width: parent.width*0.5
-//           height: parent.height*(1-splitWindow)
-//           y: parent.height*splitWindow
-//           fitData: true
-//           fitExact: true
-//           xLabel: "d [Å] "
-//           yLabel: "P(d)"
-//           title: "Scale"
-//           LineGraph {
-//               id: graph1
-//               dataSource: LineGraphDataSource {
-//                   id: dataSource1
-//               }
-//               width: 2
-//               // style: Qt.DotLine
-//           }
-//       }
-
 
     Visualizer {
         width: parent.width*0.5
