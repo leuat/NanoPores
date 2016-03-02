@@ -75,26 +75,25 @@ void MyWorker::saveFile()
 bool MyWorker::manageCommands()
 {
     if (!workerData->command().isEmpty()) {
-        qDebug() << workerData->workerName() << "command: " << workerData->command();
         QStringList cmd = workerData->command().toLower().split(" ");
-        if (cmd[0]=="statistics") {
-            qDebug() << workerData->workerName() << "Starting analysis on parameter: " << cmd[1];
+        QString command = cmd[0];
+        if (command=="statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
-                qDebug() << workerData->workerName() << "ZERO particles in data input!";
+                qDebug() << "ZERO particles in data input!";
                 workerData->setCommand("");
                 return false;
             }
             m_likelihood.bruteForce1D(10, cmd[1], workerData->model());
-        } else if (cmd[0]=="loaddata") {
+        } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
             m_likelihood.setDataInput(&m_dataParticles);
-        } else if (cmd[0] =="calculate_porosity") {
+        } else if (command =="calculate_porosity") {
             calculatePorosity();
-        } else if (cmd[0] == "save_statistics") {
+        } else if (command == "save_statistics") {
             saveStatistics();
-        } else if (cmd[0]=="calculate_model_statistics") {
+        } else if (command=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << "ZERO particles in data input!";
@@ -253,18 +252,18 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         saveFile();
         bool everythingOK = manageCommands();
 
-//        if(everythingOK) {
-//            if (m_likelihood.tick()) {
-//                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
-//                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
-//                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
-//            }
+        if(everythingOK) {
+            if (m_likelihood.tick()) {
+                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
+                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
+                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+            }
 //            if (m_likelihood.getDone()){
 //                m_likelihood.setDone(false);
 //                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
 //                qDebug() << "Min value: " << m_likelihood.getMinVal();
 //            }
-//        }
+        }
     }
 }
 
