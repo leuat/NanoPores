@@ -85,6 +85,14 @@ bool MyWorker::manageCommands()
                 return false;
             }
             m_likelihood.bruteForce1D(10, cmd[1], workerData->model());
+        } else if (command=="likelihoodmontecarlo") {
+            m_likelihood.setOriginalInput(&m_particles);
+            if (m_dataParticles.size()==0) {
+                qDebug() << "ZERO particles in data input!";
+                workerData->setCommand("");
+                return false;
+            }
+            m_likelihood.monteCarlo(workerData->model(), 10);
         } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
@@ -181,7 +189,7 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         return;
     }
 
-    m_particles.boundingBox();
+    m_particles.calculateBoundingBox();
     if (workerData->enableCutting()) {
         Model *model = workerData->model();
         if(!model) return;
@@ -194,13 +202,13 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         model->start();
         // #pragma omp parallel for num_threads(8)
         for(int i=0; i<numberOfParticles; i++) {
-            Particle *pos = m_particles.getParticles()[i];
-            const QVector3D realPos = pos->getPos();
-            QVector3D scaledPos = realPos/m_particles.getBoundsSize()*10;
-            if (!(realPos[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()<m_particles.getBoundsMin()[0]*workerData->slice() ||
-                  realPos[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()>m_particles.getBoundsMax()[0]*workerData->slice()))
+            Particle *particle = m_particles.getParticles()[i];
+            const QVector3D position = particle->getPos();
+            // QVector3D scaledPos = position/m_particles.getBoundsSize()*10;
+            if (!(position[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()<m_particles.getBoundsMin()[0]*workerData->slice() ||
+                  position[0] + m_particles.getBoundsSize()*workerData->sliceTranslate()>m_particles.getBoundsMax()[0]*workerData->slice()))
             {
-                if (!model->isInVoid(scaledPos)) {
+                if (!model->isInVoid(position)) {
                     shouldBeAdded[i] = true;
                 }
             }
@@ -282,68 +290,55 @@ float WorkerData::slice() const
 {
     return m_slice;
 }
-
 bool WorkerData::enableCutting() const
 {
     return m_enableCutting;
 }
-
 QString WorkerData::fileToOpen() const
 {
     return m_fileToOpen;
 }
-
 QString WorkerData::fileToSave() const
 {
     return m_fileToSave;
 }
-
 QString WorkerData::lblInfo() const
 {
     return m_lblInfo;
 }
-
 QString WorkerData::command() const
 {
     return m_command;
 }
-
 DataSource *WorkerData::dataSource() const
 {
     return m_dataSource;
 }
-
 DataSource *WorkerData::dataSource2() const
 {
     return m_dataSource2;
 }
-
 DataSource *WorkerData::dataSource3() const
 {
     return m_dataSource3;
 }
-
 QString WorkerData::workerName() const
 {
     return m_workerName;
 }
-
 Model *WorkerData::model() const
 {
     return m_model;
 }
-
 float WorkerData::sliceTranslate() const
 {
     return m_sliceTranslate;
 }
-
 void WorkerData::allocate() {
     if (initialized)
         return;
     initialized = true;
 }
-
 void WorkerData::setSlice(float slice)
 {
     if (m_slice == slice)
@@ -352,7 +347,6 @@ void WorkerData::setSlice(float slice)
     m_slice = slice;
     emit sliceChanged(slice);
 }
-
 void WorkerData::setEnableCutting(bool enableCutting)
 {
     if (m_enableCutting == enableCutting)
@@ -361,7 +355,6 @@ void WorkerData::setEnableCutting(bool enableCutting)
     m_enableCutting = enableCutting;
     emit enableCuttingChanged(enableCutting);
 }
-
 void WorkerData::setFileToOpen(QString fileToOpen)
 {
     if (m_fileToOpen == fileToOpen)
@@ -370,7 +363,6 @@ void WorkerData::setFileToOpen(QString fileToOpen)
     m_fileToOpen = fileToOpen;
     emit fileToOpenChanged(fileToOpen);
 }
-
 void WorkerData::setFileToSave(QString fileToSave)
 {
     if (m_fileToSave == fileToSave)
@@ -379,7 +371,6 @@ void WorkerData::setFileToSave(QString fileToSave)
     m_fileToSave = fileToSave;
     emit fileToSaveChanged(fileToSave);
 }
-
 void WorkerData::setLblInfo(QString lblInfo)
 {
     if (m_lblInfo == lblInfo)
@@ -388,7 +379,6 @@ void WorkerData::setLblInfo(QString lblInfo)
     m_lblInfo = lblInfo;
     emit lblInfoChanged(lblInfo);
 }
-
 void WorkerData::setCommand(QString command)
 {
     if (m_command == command)
@@ -397,7 +387,6 @@ void WorkerData::setCommand(QString command)
     m_command = command;
     emit commandChanged(command);
 }
-
 void WorkerData::setDataSource(DataSource *dataSource)
 {
     if (m_dataSource == dataSource)
@@ -406,7 +395,6 @@ void WorkerData::setDataSource(DataSource *dataSource)
     m_dataSource = dataSource;
     emit dataSourceChanged(dataSource);
 }
-
 void WorkerData::setDataSource2(DataSource *dataSource2)
 {
     if (m_dataSource2 == dataSource2)
@@ -415,7 +403,6 @@ void WorkerData::setDataSource2(DataSource *dataSource2)
     m_dataSource2 = dataSource2;
     emit dataSource2Changed(dataSource2);
 }
-
 void WorkerData::setDataSource3(DataSource *dataSource3)
 {
     if (m_dataSource3 == dataSource3)
@@ -424,7 +411,6 @@ void WorkerData::setDataSource3(DataSource *dataSource3)
     m_dataSource3 = dataSource3;
     emit dataSource3Changed(dataSource3);
 }
-
 void WorkerData::setWorkerName(QString workerName)
 {
     if (m_workerName == workerName)
@@ -433,7 +419,6 @@ void WorkerData::setWorkerName(QString workerName)
     m_workerName = workerName;
     emit workerNameChanged(workerName);
 }
-
 void WorkerData::setModel(Model *model)
 {
     if (m_model == model)
@@ -442,7 +427,6 @@ void WorkerData::setModel(Model *model)
     m_model = model;
     emit modelChanged(model);
 }
-
 void WorkerData::setSliceTranslate(float sliceTranslate)
 {
     if (m_sliceTranslate == sliceTranslate)

@@ -35,7 +35,6 @@ public:
 
     LGraph calculateStatisticsDirect(Particles& particles);
     void calculateStatistics(QVector<QVector3D>& particleList, LGraph& graph);
-    void calculateModel(class Model *modelData) override;
     QVector<QPointF> currentModel() const;
     QVector<QPointF> currentData() const;
     int voxelsPerDimension() const;
@@ -44,6 +43,9 @@ public:
     void setHistogramBins(int histogramBins);
     double cutoff() const;
     void setCutoff(double cutoff);
+
+    // Likelihood interface
+    void calculateModel(class Model *model) override;
 };
 
 #endif // DTALIKELIHOOD_H

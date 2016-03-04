@@ -137,7 +137,7 @@ void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cut
     m_randomNumbers.clear();
     points.clear();
 
-    qDebug() << "DTO finished after " << timer.elapsed() << " ms.";
+    // qDebug() << "DTO finished after " << timer.elapsed() << " ms.";
     m_isValid = true;
 
     //    if(pointsOriginal.size() == 0) {

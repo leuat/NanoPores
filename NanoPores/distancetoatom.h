@@ -15,7 +15,8 @@ float floatRandom(const float & min, const float & max);
 class DistanceToAtom
 {
 private:
-    int m_numberOfRandomVectors = 8192;
+    // int m_numberOfRandomVectors = 8192;
+    int m_numberOfRandomVectors = 65536;
     QVector<float> m_values;
     QVector<float> m_randomNumbers;
     bool m_isValid = false;

@@ -70,11 +70,8 @@ void DataSource::setPoints(QVector<QPointF> points, bool normalized)
     }
     if(normalized) {
         normalizeArea();
-        qDebug() << "Did normalize.";
     }
-    qDebug() << "Did set points.";
     update();
-    qDebug() << "Did update.";
 }
 
 void DataSource::normalizeArea()

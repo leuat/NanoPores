@@ -371,6 +371,14 @@ Window {
                         fileDialogSave.open()
                     }
                 }
+                Button {
+                    id: paramMonteCarlo
+                    text: "Monte Carlo"
+                    onClicked: {
+                        data2.command = "likelihoodMonteCarlo"
+                    }
+                }
+
             }
         ]
     }

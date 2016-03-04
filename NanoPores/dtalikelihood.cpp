@@ -1,6 +1,6 @@
 #include "dtalikelihood.h"
 #include <QDebug>
-#include "GeometryLibrary/models/model.h"
+#include "GeometryLibrary/models/models.h"
 
 int DTALikelihood::voxelsPerDimension() const
 {
@@ -62,11 +62,10 @@ void DTALikelihood::calculateStatistics(QVector<QVector3D> &points, LGraph& grap
 void DTALikelihood::calculateModel(Model *model)
 {
     m_modelParticles.clear();
-    m_originalParticles->boundingBox();
+    m_originalParticles->calculateBoundingBox();
     model->start();
     for (Particle* pos : m_originalParticles->getParticles()) {
-        QVector3D scaledPos = pos->getPos()/m_originalParticles->getBoundsSize()*10;
-        if (!model->isInVoid(scaledPos)) {
+        if (!model->isInVoid(pos->getPos())) {
             m_modelParticles.append(pos->getPos());
         }
     }
