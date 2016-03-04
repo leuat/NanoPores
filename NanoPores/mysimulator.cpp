@@ -191,6 +191,7 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
         shouldBeAdded.resize(numberOfParticles);
         memset(&shouldBeAdded[0], 0, shouldBeAdded.size()*sizeof(bool));
 
+        model->start();
         // #pragma omp parallel for num_threads(8)
         for(int i=0; i<numberOfParticles; i++) {
             Particle *pos = m_particles.getParticles()[i];
@@ -204,6 +205,9 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
                 }
             }
         }
+
+        model->stop();
+
         for(int i=0; i<numberOfParticles; i++) {
             Particle *pos = m_particles.getParticles()[i];
             if(shouldBeAdded[i])  addParticleToSphere(pos, spheres,extraList);
@@ -258,11 +262,11 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
                 workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
                 workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
             }
-//            if (m_likelihood.getDone()){
-//                m_likelihood.setDone(false);
-//                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
-//                qDebug() << "Min value: " << m_likelihood.getMinVal();
-//            }
+            if (m_likelihood.getDone()){
+                m_likelihood.setDone(false);
+                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
+                qDebug() << "Min value: " << m_likelihood.getMinVal();
+            }
         }
     }
 }

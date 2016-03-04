@@ -63,12 +63,13 @@ void DTALikelihood::calculateModel(Model *model)
 {
     m_modelParticles.clear();
     m_originalParticles->boundingBox();
-
+    model->start();
     for (Particle* pos : m_originalParticles->getParticles()) {
         QVector3D scaledPos = pos->getPos()/m_originalParticles->getBoundsSize()*10;
         if (!model->isInVoid(scaledPos)) {
             m_modelParticles.append(pos->getPos());
         }
     }
+    model->stop();
     calculateStatistics(m_modelParticles,m_modelData);
 }
