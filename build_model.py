@@ -1,9 +1,9 @@
-
 import numpy as np
 import sys
 import os
 import math
 import matplotlib.pyplot as plt
+
 
 dir = "../build-NanoPores-Desktop_Qt_5_5_1_clang_64bit-Release/NanoPores/NanoPores.app/Contents/MacOS/"
 
@@ -22,6 +22,13 @@ def load(name):
 	d[1]= [row.split(' ')[1] for row in data]
 	d[1] = [float(i) for i in d[1]]
 	return d
+
+def save(name, data):
+	with open(name,"w") as f:
+		for i in range(len(data[0])):
+			f.write(str(data[0][i]) + " " + str(data[1][i]) + " " + str(data[2][i]) + "\n")
+
+	f.close()
 
 def getAverage(data):
 	avg = np.zeros(len(data[0]))
@@ -43,10 +50,9 @@ def addToPlot(path, ax, col, lbl, lw, col2):
 	data = []
 	x = []
 	for filename in os.listdir(path):
-		if not os.path.isdir(path + "/" + filename):
-			d = load(path + "/" + filename)
-			data.append(d[1])
-			x = d[0]
+		d = load(path + "/" + filename)
+		data.append(d[1])
+		x = d[0]
 
 	avg = getAverage(data)
 	sigma = getSigma(data, avg)
@@ -60,34 +66,38 @@ def addToPlot(path, ax, col, lbl, lw, col2):
 
 
 
-if len(sys.argv) != 3:
-	print "usage: python plot_dist.py dir1 dir2"
+if len(sys.argv) != 2:
+	print "usage: python build_model.py [ directory ]"
 	sys.exit(1)
 
-path1 = sys.argv[1]
-path2 = sys.argv[2]
+path = sys.argv[1]
+
+def loadDirectory(path):
+	data = []
+	x = []
+	for filename in os.listdir(path):
+		d = load(path + "/" + filename)
+		data.append(d[1])
+		x = d[0]
+
+	avg = getAverage(data)
+	sigma = getSigma(data, avg)
+	data = []
+	data.append(x)
+	data.append(avg)
+	data.append(sigma)
+	#print data
+	return data
 
 
-fig = plt.figure()
+for filename in os.listdir(path):
+	fn = path + filename;
+	if (os.path.isdir(fn)):
+		#print "loading " + filename
+		data = loadDirectory(fn)
+		#print data
+		save(fn + ".txt", data)
+	
 
-ax1 = fig.add_subplot(111)
+# then, generate plots
 
-ax1.set_title("Model comparison")    
-ax1.set_xlabel('Scale')
-ax1.set_ylabel('Value')
-
-lw = 2.0
-
-fc = '#B0B0B0'
-
-
-addToPlot(path1, ax1, '#F08030', 'test1', 2.0,'#F0B090')
-addToPlot(path2, ax1, '#3080F0', 'test2', 2.0,'#90B0F0')
-
-#ax1.set_xlim([0,12])
-
-leg = ax1.legend()
-plt.savefig('compare.eps', format='eps', dpi=1000)
-plt.savefig('compare.png', format='png', dpi=1000)
-
-plt.show()

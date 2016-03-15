@@ -84,7 +84,7 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.bruteForce1D(10, cmd[1], workerData->model());
+            m_likelihood.bruteForce1D(20, cmd[1], workerData->model());
         } else if (command=="likelihoodmontecarlo") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
