@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     GeometryLibrary/models/regularnoisemodel.cpp \
     GeometryLibrary/models/xyzmodel.cpp \
     GeometryLibrary/misc/cutil.cpp \
-    datasource.cpp
+    datasource.cpp \
+    GeometryLibrary/models/octree.cpp
 
 RESOURCES += qml.qrc
 
@@ -64,7 +65,8 @@ HEADERS += \
     GeometryLibrary/models/xyzmodel.h \
     GeometryLibrary/misc/cinifile.h \
     GeometryLibrary/misc/cutil.h \
-    datasource.h
+    datasource.h \
+    GeometryLibrary/models/octree.h
 
 DISTFILES += \
     GeometryLibrary/README.md

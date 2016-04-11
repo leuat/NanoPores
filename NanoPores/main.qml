@@ -20,6 +20,9 @@ Window {
     RegularNoiseModel {
         id: regularNoiseModel
     }
+    MultiFractalModel {
+        id: multiFractalModel
+    }
 
     MySimulator {
         id: simulator1
@@ -43,7 +46,7 @@ Window {
             dataSource2: dataSource2
             dataSource3: dataSource3
             lblInfo: lblinfo2.text
-            model: regularNoiseModel
+            model: multiFractalModel
         }
     }
 
@@ -127,6 +130,15 @@ Window {
             y: 90
             onClicked: {
                 data2.command = "save_statistics"
+            }
+        }
+        Button {
+            id: btnOctree
+            text: "Octree Measure"
+            y: 120
+            onClicked: {
+//                data1.command = "calculate_octree_measure"
+                data2.command = "calculate_octree_measure"
             }
         }
 
