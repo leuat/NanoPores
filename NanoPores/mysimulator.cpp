@@ -105,6 +105,8 @@ bool MyWorker::manageCommands()
             saveStatistics();
         } else if (command == "calculate_octree_measure") {
             calculateOctree();
+        } else if (command == "calculate_fractal_dimension") {
+            calculateFractalDimension();
         } else if (command=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -133,32 +135,49 @@ void MyWorker::calculateOctree() {
         Octree oct;
         oct.setThreshold(4);
         QVector<QVector3D> list;
-        if (i==0)
+        if (i==0) {
             m_dataParticles.getVector3DList(list);
-        if (i==1)
-            m_particles.getVector3DList(list);
+
+        }
+        if (i==1) {
+            Particles newList;
+            constrainParticles(nullptr, &newList);
+            newList.getVector3DList(list);
+//            list.resize(m_dataParticles.size());
+        }
 
         oct.setPoints(list);
         oct.CalculateBoundingbox();
 
-        oct.setMaxDepth(7);
-        oct.buildTree(true);
-        oct.melt();
+        oct.setMaxDepth(10);
+        oct.buildTree(false, false);
         QVector<QPointF> measure;
         oct.calculateOctreeMeasure(measure);
-        for (int i=0;i<measure.size();i++) {
+        for (int i=1;i<measure.size();i++) {
             if (measure[i].y()!=0)
-                measure[i].setY(log(measure[i].y()));
-            qDebug() << measure[i];
+//                measure[i].setY(log(measure[i].y()));
+            measure[i].setY((measure[i].y()/pow(8,i)));
+            //qDebug() << measure[i];
 
         }
         if (i==0)
-            workerData->dataSource()->setPoints(measure, true);
-        if (i==1)
             workerData->dataSource2()->setPoints(measure, true);
+        if (i==1)
+            workerData->dataSource3()->setPoints(measure, true);
 
       }
 
+
+}
+
+void MyWorker::calculateFractalDimension()
+{
+    Model *model = workerData->model();
+    if(!model) return;
+    model->start();
+
+    model->calculateFractalDimension(0,157);
+    model->stop();
 
 }
 

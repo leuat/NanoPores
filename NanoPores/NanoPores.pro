@@ -66,7 +66,8 @@ HEADERS += \
     GeometryLibrary/misc/cinifile.h \
     GeometryLibrary/misc/cutil.h \
     datasource.h \
-    GeometryLibrary/models/octree.h
+    GeometryLibrary/models/octree.h \
+    GeometryLibrary/misc/random.h
 
 DISTFILES += \
     GeometryLibrary/README.md

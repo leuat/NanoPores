@@ -111,6 +111,8 @@ private:
     void calculateStatistics();
     void saveStatistics();
     void calculateOctree();
+    void calculateFractalDimension();
+
 
     void calculatePorosity();
     // This one calculates E(x) and sigma for the given model

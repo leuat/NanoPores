@@ -46,7 +46,8 @@ Window {
             dataSource2: dataSource2
             dataSource3: dataSource3
             lblInfo: lblinfo2.text
-            model: multiFractalModel
+//            model: multiFractalModel
+            model: regularNoiseModel
         }
     }
 
@@ -139,6 +140,15 @@ Window {
             onClicked: {
 //                data1.command = "calculate_octree_measure"
                 data2.command = "calculate_octree_measure"
+            }
+        }
+        Button {
+            id: btnFractalDim
+            text: "Fractal dimension"
+            y: 150
+            onClicked: {
+//                data1.command = "calculate_octree_measure"
+                data2.command = "calculate_fractal_dimension"
             }
         }
 
@@ -325,7 +335,7 @@ Window {
         id: paramGUI
         width: 400
         height: 390
-        y: 120;
+        y: 180;
         x: parent.width*0.0
         color: Qt.rgba(0.7, 0.3, 0.2, 0.4)
         radius: 10
