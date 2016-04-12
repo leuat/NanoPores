@@ -147,7 +147,7 @@ void MyWorker::calculateOctree() {
         }
 
         oct.setPoints(list);
-        oct.CalculateBoundingbox();
+        oct.calculateBoundingbox();
 
         oct.setMaxDepth(10);
         oct.buildTree(false, false);
