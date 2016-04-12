@@ -110,6 +110,7 @@ private:
     bool manageCommands();
     void calculateStatistics();
     void saveStatistics();
+    void calculateOctree();
 
     void calculatePorosity();
     // This one calculates E(x) and sigma for the given model

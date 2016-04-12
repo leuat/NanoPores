@@ -4,6 +4,8 @@
 #include "io.h"
 #include "distancetoatom.h"
 #include "GeometryLibrary/noise.h"
+#include "GeometryLibrary/models/octree.h"
+
 using namespace std;
 
 MySimulator::MySimulator()
@@ -84,7 +86,7 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.bruteForce1D(10, cmd[1], workerData->model());
+            m_likelihood.bruteForce1D(20, cmd[1], workerData->model());
         } else if (command=="likelihoodmontecarlo") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -101,6 +103,8 @@ bool MyWorker::manageCommands()
             calculatePorosity();
         } else if (command == "save_statistics") {
             saveStatistics();
+        } else if (command == "calculate_octree_measure") {
+            calculateOctree();
         } else if (command=="calculate_model_statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -118,6 +122,44 @@ bool MyWorker::manageCommands()
     }
 
     return true;
+}
+
+void MyWorker::calculateOctree() {
+    if (workerData==nullptr)
+        return;
+
+    for (int i=0;i<=1;i++) {
+
+        Octree oct;
+        oct.setThreshold(4);
+        QVector<QVector3D> list;
+        if (i==0)
+            m_dataParticles.getVector3DList(list);
+        if (i==1)
+            m_particles.getVector3DList(list);
+
+        oct.setPoints(list);
+        oct.CalculateBoundingbox();
+
+        oct.setMaxDepth(7);
+        oct.buildTree(true);
+        oct.melt();
+        QVector<QPointF> measure;
+        oct.calculateOctreeMeasure(measure);
+        for (int i=0;i<measure.size();i++) {
+            if (measure[i].y()!=0)
+                measure[i].setY(log(measure[i].y()));
+            qDebug() << measure[i];
+
+        }
+        if (i==0)
+            workerData->dataSource()->setPoints(measure, true);
+        if (i==1)
+            workerData->dataSource2()->setPoints(measure, true);
+
+      }
+
+
 }
 
 

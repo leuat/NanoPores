@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<Model>("GeometryLibrary", 1, 0, "Model",
                                           "Cannot create abstract type Model. This must be subclassed.");
     qmlRegisterType<RegularNoiseModel>("GeometryLibrary", 1, 0, "RegularNoiseModel");
+    qmlRegisterType<MultiFractalModel>("GeometryLibrary", 1, 0, "MultiFractalModel");
     qmlRegisterType<Parameters>("GeometryLibrary",1,0,"Parameters");
     QApplication app(argc, argv);
 
