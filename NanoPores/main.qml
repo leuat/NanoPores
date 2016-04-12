@@ -76,9 +76,9 @@ Window {
 
             Light {
                 id: light1
-                ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
+                ambientColor: Qt.rgba(1, 1.0, 1.0, 1);
                 specularColor: "white"
-                diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
+                diffuseColor: Qt.rgba(0.4, 0.5, 1.0, 1);
                 ambientIntensity: 0.2
                 diffuseIntensity: 1
                 specularIntensity: 0.8
@@ -211,15 +211,17 @@ Window {
 
         x: parent.width*0.5
         simulator: simulator2
-        camera: Camera {
-            id: camera2
-        }
+//        camera: Camera {
+//            id: camera2
+//        }
+        camera: camera1
         backgroundColor: "black"
 
         TrackballNavigator {
             id: navigator2
             anchors.fill: parent
-            camera: camera2
+            // camera: camera2
+            camera: camera1
         }
 
         Spheres {
@@ -231,15 +233,15 @@ Window {
 
             Light {
                 id: light2
-                ambientColor: Qt.rgba(1, 0.7, 0.5, 1);
+                ambientColor: Qt.rgba(1, 1.0, 1.0, 1);
                 specularColor: "white"
-                diffuseColor: Qt.rgba(0.2, 0.5, 1.0, 1);
-                ambientIntensity: 0.02
+                diffuseColor: Qt.rgba(0.4, 0.5, 1.0, 1);
+                ambientIntensity: 0.2
                 diffuseIntensity: 1
                 specularIntensity: 0.8
                 shininess: 50.0
                 attenuation: 0.2
-                position: camera2.position
+                position: camera1.position
             }
         }
     }
