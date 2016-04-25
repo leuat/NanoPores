@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <iostream>
 #include "io.h"
-#include "distancetoatom.h"
+#include "GeometryLibrary/distancetoatom.h"
 #include "GeometryLibrary/noise.h"
 #include "GeometryLibrary/models/octree.h"
 
@@ -163,7 +163,7 @@ void MyWorker::calculateOctree() {
     for (int i=0;i<=1;i++) {
 
         Octree oct;
-        oct.setThreshold(4);
+        //oct.setThreshold(4);
         QVector<QVector3D> list;
         if (i==0) {
             m_dataParticles.appendToQVector3DList(list);

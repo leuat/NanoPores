@@ -13,10 +13,10 @@ LIBS += -L/opt/intel/lib
 SOURCES += main.cpp \
     mysimulator.cpp \
     io.cpp \
-    particle.cpp \
-    distancetoatom.cpp \
-    dtalikelihood.cpp \
     GeometryLibrary/likelihood/lgraph.cpp \
+    GeometryLibrary/particle.cpp \
+    GeometryLibrary/distancetoatom.cpp \
+    GeometryLibrary/dtalikelihood.cpp \
     GeometryLibrary/likelihood/likelihood.cpp \
     GeometryLibrary/misc/util.cpp \
     GeometryLibrary/models/model.cpp \
@@ -32,7 +32,11 @@ SOURCES += main.cpp \
     GeometryLibrary/misc/cutil.cpp \
     datasource.cpp \
     GeometryLibrary/models/octree.cpp \
+<<<<<<< HEAD
     GeometryLibrary/logger.cpp
+=======
+    GeometryLibrary/logger.cpp \
+>>>>>>> 403f2db9e1c1cf19ac7a5f734f7b1a5b40fcad83
 
 RESOURCES += qml.qrc
 
@@ -69,7 +73,14 @@ HEADERS += \
     datasource.h \
     GeometryLibrary/models/octree.h \
     GeometryLibrary/misc/random.h \
+<<<<<<< HEAD
     GeometryLibrary/logger.h
+=======
+    GeometryLibrary/logger.h \
+    GeometryLibrary/dtalikelihood.h \
+    GeometryLibrary/particle.h \
+    GeometryLibrary/distancetoatom.h
+>>>>>>> 403f2db9e1c1cf19ac7a5f734f7b1a5b40fcad83
 
 DISTFILES += \
     GeometryLibrary/README.md

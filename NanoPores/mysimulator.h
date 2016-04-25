@@ -7,10 +7,10 @@
 #include <QVector>
 #include <QVector3D>
 #include <QMap>
-#include "particle.h"
+#include "GeometryLibrary/particle.h"
 #include "QMLPlot/linegraph.h"
 #include "GeometryLibrary/models/models.h"
-#include "dtalikelihood.h"
+#include "GeometryLibrary/dtalikelihood.h"
 #include "datasource.h"
 
 class WorkerData : public QObject {
