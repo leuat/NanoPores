@@ -33,8 +33,6 @@ SimulatorWorker *MySimulator::createWorker()
     return new MyWorker();
 }
 
-
-
 void MyWorker::addParticleToSphere(Particle* p, Spheres *spheres, Particles* extraList) {
     QVector3D color = p->getType().color;
     if (spheres!=nullptr) {
@@ -56,6 +54,7 @@ void MyWorker::openFile()
         QUrl url = workerData->fileToOpen();
         qDebug() << workerData->workerName() << " is opening file " << url;
         m_particles.open(url.toLocalFile().toStdString().c_str());
+        qDebug() << workerData->workerName() << " done opening file." << url;
         workerData->setFileToOpen("");
     }
 }
@@ -74,11 +73,39 @@ void MyWorker::saveFile()
     }
 }
 
+void MyWorker::calculateCurrentStatistics() {
+    int distanceToAtomNumVectors = 320000;
+    float distanceToAtomCutoff = 30;
+
+    if (workerData==nullptr)
+        return;
+    Particles newList;
+    // First, copy particles to single list
+    if (m_particles.size()==0)
+        return;
+
+    constrainParticles(nullptr, &newList);
+    QVector<QVector3D> points = newList.getQVector3DList();
+    DistanceToAtom da(distanceToAtomNumVectors);
+    da.compute(points, distanceToAtomCutoff);
+    QVector<QPointF> hist1 = da.histogram(100);
+    qDebug() << "hist1: " << hist1;
+
+    DistanceToAtom da2(distanceToAtomNumVectors);
+    da2.compute(m_dataParticles.getQVector3DList(), distanceToAtomCutoff);
+    QVector<QPointF> hist2 = da2.histogram(100);
+    qDebug() << "hist2: " << hist2;
+
+    workerData->dataSource2()->setPoints(hist1, true);
+    workerData->dataSource3()->setPoints(hist2, true);
+}
+
 bool MyWorker::manageCommands()
 {
     if (!workerData->command().isEmpty()) {
         QStringList cmd = workerData->command().toLower().split(" ");
         QString command = cmd[0];
+        m_likelihood.setNumberOfRandomVectors(4*32768);
         if (command=="statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -87,6 +114,9 @@ bool MyWorker::manageCommands()
                 return false;
             }
             m_likelihood.bruteForce1D(20, cmd[1], workerData->model());
+        } else if(command == "current_statistics") {
+            calculateCurrentStatistics();
+            workerData->setCommand("");
         } else if (command=="likelihoodmontecarlo") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -136,13 +166,13 @@ void MyWorker::calculateOctree() {
         oct.setThreshold(4);
         QVector<QVector3D> list;
         if (i==0) {
-            m_dataParticles.getVector3DList(list);
+            m_dataParticles.appendToQVector3DList(list);
 
         }
         if (i==1) {
             Particles newList;
             constrainParticles(nullptr, &newList);
-            newList.getVector3DList(list);
+            newList.appendToQVector3DList(list);
 //            list.resize(m_dataParticles.size());
         }
 
@@ -158,7 +188,6 @@ void MyWorker::calculateOctree() {
 //                measure[i].setY(log(measure[i].y()));
             measure[i].setY((measure[i].y()/pow(8,i)));
             //qDebug() << measure[i];
-
         }
         if (i==0)
             workerData->dataSource2()->setPoints(measure, true);
@@ -193,14 +222,13 @@ void MyWorker::calculateStatistics()
 
     constrainParticles(nullptr, &newList);
     QVector<QVector3D> points;
-    newList.getVector3DList(points);
-    DistanceToAtom da(20);
+    newList.appendToQVector3DList(points);
+    DistanceToAtom da(4000);
 
-    da.compute(points, 30.0);
+    da.compute(points, 20.0);
     QVector<QPointF> hist = da.histogram(100);
 
-
-    workerData->dataSource()->setPoints(hist, true);
+    workerData->dataSource2()->setPoints(hist, true);
 
     /*
     workerData->dataSource()->clear();

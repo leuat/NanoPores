@@ -86,7 +86,7 @@ public:
         particles.clear();
     }
 
-    void getVector3DList(QVector<QVector3D>& list);
+    void appendToQVector3DList(QVector<QVector3D>& list);
 
 
     int size() {
@@ -130,6 +130,7 @@ public:
     float getCalculatedPorosity() const;
     void setCalculatedPorosity(float calculatedPorosity);
     void setIntrinsicPorosity(float intrinsicPorosity);
+    QVector<QVector3D> getQVector3DList();
 };
 
 class NBHList {

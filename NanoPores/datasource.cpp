@@ -93,7 +93,7 @@ void DataSource::normalizeArea()
         integralSum += dx*dy;
     }
     integralSum *= 0.5;
-    for(int i=0; i<numberOfPoints-1; i++) {
+    for(int i=0; i<numberOfPoints; i++) {
         m_yValuesRaw[i] /= integralSum;
     }
 }

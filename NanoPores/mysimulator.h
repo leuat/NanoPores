@@ -131,6 +131,7 @@ public:
     // SimulatorWorker interface
 private:
     void synchronizeRenderer(Renderable *renderableObject);
+    void calculateCurrentStatistics();
 };
 
 class MySimulator : public Simulator

@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += c++11
-QMAKE_CXXFLAGS +=
-QMAKE_LFLAGS +=
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
 #QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
 
 #CONFIG -=app_bundle
@@ -31,7 +31,8 @@ SOURCES += main.cpp \
     GeometryLibrary/models/xyzmodel.cpp \
     GeometryLibrary/misc/cutil.cpp \
     datasource.cpp \
-    GeometryLibrary/models/octree.cpp
+    GeometryLibrary/models/octree.cpp \
+    GeometryLibrary/logger.cpp
 
 RESOURCES += qml.qrc
 
@@ -67,7 +68,8 @@ HEADERS += \
     GeometryLibrary/misc/cutil.h \
     datasource.h \
     GeometryLibrary/models/octree.h \
-    GeometryLibrary/misc/random.h
+    GeometryLibrary/misc/random.h \
+    GeometryLibrary/logger.h
 
 DISTFILES += \
     GeometryLibrary/README.md

@@ -11,15 +11,19 @@ import QtCharts 2.0
 import DataSource 1.0
 
 Window {
+    id: windowRoot
     visible: true
     width: 1600
     height: 1024
 
     property real splitWindow : 0.6
+    property string lastBulkState
+    property string lastPorousState
 
     RegularNoiseModel {
         id: regularNoiseModel
     }
+
     MultiFractalModel {
         id: multiFractalModel
     }
@@ -46,13 +50,13 @@ Window {
             dataSource2: dataSource2
             dataSource3: dataSource3
             lblInfo: lblinfo2.text
-//            model: multiFractalModel
+            //            model: multiFractalModel
             model: regularNoiseModel
         }
     }
 
     Visualizer {
-  //      anchors.fill: parent
+        //      anchors.fill: parent
         width: parent.width*0.5
         height: parent.height*splitWindow;
         simulator: simulator1
@@ -88,67 +92,73 @@ Window {
             }
 
         }
+        Column {
+            Button {
+                id: btnOpen
+                text: "Open"
+                onClicked: {
+                    fileDialogOpenOriginal.mode = "mode1"
+                    fileDialogOpenOriginal.open()
+                }
+            }
+            Button {
+                id: btnDirty
+                text: "You dirty boy"
+                onClicked: {
+                    data1.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/sio2_100_systems_255katoms/system33.xyz"
+                    data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
+                    data2.command = "loaddata "+data1.fileToOpen
 
-        Button {
-            id: btnOpen
-            text: "Open"
-            onClicked: {
-                fileDialogOpenOriginal.mode = "mode1"
-                fileDialogOpenOriginal.open()
+    //                    data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+    //                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+    //                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                }
             }
-        }
-        Button {
-            id: btnDirty
-            text: "You dirty boy"
-            y: 30
-            onClicked: {
-                data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
-                data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-                data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+            Button {
+                id: btnStatistics
+                text: "Model statistics"
+                onClicked: {
+                    data2.command = "calculate_model_statistics"
+                }
             }
-        }
-        Button {
-            id: btnStatistics
-            text: "Model statistics"
-            y: 60
-            onClicked: {
-                data2.command = "calculate_model_statistics"
+            Button {
+                id: btnCurrentStatistics
+                text: "Current statistics"
+                onClicked: {
+                    data2.command = "current_statistics"
+                }
             }
-        }
-        Button {
-            id: btnPorosity
-            text: "Porosity"
-            y: 90
-            onClicked: {
-                data2.command = "calculate_porosity"
-                data1.command = "calculate_porosity"
+            Button {
+                id: btnPorosity
+                text: "Porosity"
+                onClicked: {
+                    data2.command = "calculate_porosity"
+                    data1.command = "calculate_porosity"
+                }
             }
-        }
 
-        Button {
-            id: btnSaveStatistics
-            text: "Save Statistics"
-            y: 90
-            onClicked: {
-                data2.command = "save_statistics"
+            Button {
+                id: btnSaveStatistics
+                text: "Save Statistics"
+                onClicked: {
+                    data2.command = "save_statistics"
+                }
             }
-        }
-        Button {
-            id: btnOctree
-            text: "Octree Measure"
-            y: 120
-            onClicked: {
-//                data1.command = "calculate_octree_measure"
-                data2.command = "calculate_octree_measure"
+            Button {
+                id: btnOctree
+                text: "Octree Measure"
+                onClicked: {
+                    //                data1.command = "calculate_octree_measure"
+                    data2.command = "calculate_octree_measure"
+                }
             }
-        }
-        Button {
-            id: btnFractalDim
-            text: "Fractal dimension"
-            y: 150
-            onClicked: {
-//                data1.command = "calculate_octree_measure"
-                data2.command = "calculate_fractal_dimension"
+            Button {
+                id: btnFractalDim
+                text: "Fractal dimension"
+                onClicked: {
+                    //                data1.command = "calculate_octree_measure"
+                    data2.command = "calculate_fractal_dimension"
+                }
             }
         }
 
@@ -163,6 +173,9 @@ Window {
         Settings {
             property alias lastOpenedFolderOriginal: fileDialogOpenOriginal.folder
             property alias lastOpenedFolderSave: fileDialogSave.folder
+            property alias lastBulkState: windowRoot.lastBulkState
+            property alias lastPorousState: windowRoot.lastPorousState
+            property alias previousParameterFile: paramLoadPrev.previousParameterFile
         }
 
         FileDialog {
@@ -183,6 +196,7 @@ Window {
                     data2.command = "loaddata "+fileDialogOpenOriginal.fileUrls.toString();
                 }
                 if (mode==="parameters") {
+                    paramLoadPrev.previousParameterFile = fileDialogOpenOriginal.fileUrls.toString()
                     data2.model.parameters.load(fileDialogOpenOriginal.fileUrls.toString())
                 }
             }
@@ -211,9 +225,9 @@ Window {
 
         x: parent.width*0.5
         simulator: simulator2
-//        camera: Camera {
-//            id: camera2
-//        }
+        //        camera: Camera {
+        //            id: camera2
+        //        }
         camera: camera1
         backgroundColor: "black"
 
@@ -315,9 +329,13 @@ Window {
             id: figure2
             anchors.fill: parent
             lineGraphs: [linegraph2, linegraph3]
+            legend.visible: true
+
             LineGraph {
+
                 id: linegraph2
                 figure: figure2
+                name: "Model"
                 dataSource: DataSource {
                     id: dataSource2
                 }
@@ -326,6 +344,7 @@ Window {
             LineGraph {
                 id: linegraph3
                 figure: figure2
+                name: "Data"
                 dataSource: DataSource {
                     id: dataSource3
                 }
@@ -393,6 +412,14 @@ Window {
                     onClicked: {
                         fileDialogSave.mode = "parameters"
                         fileDialogSave.open()
+                    }
+                }
+                Button {
+                    id: paramLoadPrev
+                    property string previousParameterFile
+                    text: "Load previous"
+                    onClicked: {
+                        data2.model.parameters.load(previousParameterFile)
                     }
                 }
                 Button {

@@ -31,6 +31,8 @@ CellList DistanceToAtom::buildCellList(const QVector<QVector3D> &points, float s
         int cj = p[1] / cellSize;
         int ck = p[2] / cellSize;
         if(!checkRange<int>(ci, 0, numCells-1) || !checkRange<int>(cj, 0, numCells-1) || !checkRange<int>(ck, 0, numCells-1)) {
+            qDebug() << "Particle position: " << p;
+            qDebug() << "Size: " << size << " and cutoff: " << cutoff << " and cellSize: " << cellSize;
             qFatal("DistanceToAtom::buildCellList() error: particle %d is out of cell list bounds.", i);
             exit(1);
         }
@@ -60,7 +62,7 @@ void DistanceToAtom::compute(const QVector<QVector3D> &pointsOriginal, float cut
         max = std::max(max, point[1]);
         max = std::max(max, point[2]);
     }
-    max += 1e-5;
+    max += 1e-3;
     const float systemSize = max - min;
 
     // Now translate all points
@@ -220,13 +222,13 @@ QVector<QPointF> DistanceToAtom::histogram(int bins) {
         qFatal("DistanceToAtom is not valid. Run compute() first.");
         exit(1);
     }
-    float minValue = 1e90;
-    float maxValue = 0;
+    double minValue = 1e9;
+    double maxValue = 0;
 
     for(const float &val : m_values) {
         if(val >= 0) {
-            minValue = std::min(minValue, (float)sqrt(val));
-            maxValue = std::max(maxValue, (float)sqrt(val));
+            minValue = std::min(minValue, sqrt(val));
+            maxValue = std::max(maxValue, sqrt(val));
         }
     }
     gsl_histogram *hist = gsl_histogram_alloc (bins);

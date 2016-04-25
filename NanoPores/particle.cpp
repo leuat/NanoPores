@@ -114,7 +114,14 @@ void Particles::copyFrom(Particles &plist)
     }
 }
 
-void Particles::getVector3DList(QVector<QVector3D>& list)
+QVector<QVector3D> Particles::getQVector3DList()
+{
+    QVector<QVector3D> list;
+    appendToQVector3DList(list);
+    return list;
+}
+
+void Particles::appendToQVector3DList(QVector<QVector3D>& list)
 {
     for(Particle* p : particles)
         list.append(p->getPos());
