@@ -32,11 +32,7 @@ SOURCES += main.cpp \
     GeometryLibrary/misc/cutil.cpp \
     datasource.cpp \
     GeometryLibrary/models/octree.cpp \
-<<<<<<< HEAD
     GeometryLibrary/logger.cpp
-=======
-    GeometryLibrary/logger.cpp \
->>>>>>> 403f2db9e1c1cf19ac7a5f734f7b1a5b40fcad83
 
 RESOURCES += qml.qrc
 
@@ -50,9 +46,6 @@ include(../SimVis/library_deployment.pri)
 HEADERS += \
     mysimulator.h \
     io.h \
-    particle.h \
-    distancetoatom.h \
-    dtalikelihood.h \
     GeometryLibrary/likelihood/lgraph.h \
     GeometryLibrary/likelihood/likelihood.h \
     GeometryLibrary/likelihood/spline.h \
@@ -73,14 +66,10 @@ HEADERS += \
     datasource.h \
     GeometryLibrary/models/octree.h \
     GeometryLibrary/misc/random.h \
-<<<<<<< HEAD
-    GeometryLibrary/logger.h
-=======
     GeometryLibrary/logger.h \
+    GeometryLibrary/distancetoatom.h \
     GeometryLibrary/dtalikelihood.h \
-    GeometryLibrary/particle.h \
-    GeometryLibrary/distancetoatom.h
->>>>>>> 403f2db9e1c1cf19ac7a5f734f7b1a5b40fcad83
+    GeometryLibrary/particle.h
 
 DISTFILES += \
     GeometryLibrary/README.md
