@@ -74,8 +74,8 @@ void MyWorker::saveFile()
 }
 
 void MyWorker::calculateCurrentStatistics() {
-    int distanceToAtomNumVectors = 320000;
-    float distanceToAtomCutoff = 30;
+    int distanceToAtomNumVectors = 150000;
+    float distanceToAtomCutoff = 15;
 
     if (workerData==nullptr)
         return;
