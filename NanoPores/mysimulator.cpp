@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <iostream>
 #include "io.h"
-#include "GeometryLibrary/distancetoatom.h"
+#include "GeometryLibrary/measures/distancetoatom.h"
 #include "GeometryLibrary/noise.h"
 #include "GeometryLibrary/models/octree.h"
 

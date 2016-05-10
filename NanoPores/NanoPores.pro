@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += c++11
-QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -fopenmp
+#QMAKE_LFLAGS += -fopenmp
 #QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
 
 #CONFIG -=app_bundle
@@ -15,7 +15,6 @@ SOURCES += main.cpp \
     io.cpp \
     GeometryLibrary/likelihood/lgraph.cpp \
     GeometryLibrary/particle.cpp \
-    GeometryLibrary/distancetoatom.cpp \
     GeometryLibrary/dtalikelihood.cpp \
     GeometryLibrary/likelihood/likelihood.cpp \
     GeometryLibrary/misc/util.cpp \
@@ -32,7 +31,12 @@ SOURCES += main.cpp \
     GeometryLibrary/misc/cutil.cpp \
     datasource.cpp \
     GeometryLibrary/models/octree.cpp \
-    GeometryLibrary/logger.cpp
+    GeometryLibrary/logger.cpp \
+    GeometryLibrary/measures/measure.cpp \
+    GeometryLibrary/measures/distancetoatom.cpp \
+    GeometryLibrary/misc/grid.cpp \
+    GeometryLibrary/misc/distancetoatommap.cpp \
+    GeometryLibrary/misc/points.cpp
 
 RESOURCES += qml.qrc
 
@@ -67,9 +71,13 @@ HEADERS += \
     GeometryLibrary/models/octree.h \
     GeometryLibrary/misc/random.h \
     GeometryLibrary/logger.h \
-    GeometryLibrary/distancetoatom.h \
     GeometryLibrary/dtalikelihood.h \
-    GeometryLibrary/particle.h
+    GeometryLibrary/particle.h \
+    GeometryLibrary/measures/measure.h \
+    GeometryLibrary/measures/distancetoatom.h \
+    GeometryLibrary/misc/grid.h \
+    GeometryLibrary/misc/distancetoatommap.h \
+    GeometryLibrary/misc/points.h
 
 DISTFILES += \
     GeometryLibrary/README.md
