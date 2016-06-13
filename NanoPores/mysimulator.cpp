@@ -105,7 +105,8 @@ bool MyWorker::manageCommands()
     if (!workerData->command().isEmpty()) {
         QStringList cmd = workerData->command().toLower().split(" ");
         QString command = cmd[0];
-        m_likelihood.setNumberOfRandomVectors(4*32768);
+//        m_likelihood.setNumberOfRandomVectors(4*32768);
+        m_likelihood.setNumberOfRandomVectors(10000);
         if (command=="statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -124,7 +125,7 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.monteCarlo(workerData->model(), 10);
+            m_likelihood.monteCarlo(workerData->model(), 100000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
         } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());

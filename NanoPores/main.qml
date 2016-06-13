@@ -109,9 +109,9 @@ Window {
                     data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
                     data2.command = "loaddata "+data1.fileToOpen
 
-    //                    data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
-    //                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-    //                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                        data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                        data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+                        data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
                 }
             }
             Button {
