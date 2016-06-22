@@ -125,7 +125,7 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.monteCarlo(workerData->model(), 100000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
+            m_likelihood.monteCarlo(workerData->model(), 1000000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
         } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
