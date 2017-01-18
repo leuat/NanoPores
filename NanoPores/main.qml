@@ -55,8 +55,8 @@ Window {
             dataSource3: dataSource3
             lblInfo: lblinfo2.text
             //            model: multiFractalModel
-//            model: regularNoiseModel
-            model: mkiiModel
+            model: regularNoiseModel
+//            model: mkiiModel
         }
     }
 
@@ -118,13 +118,14 @@ Window {
                         data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
                         data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
 
-                    data1.fileToOpen = "file:////Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_reproduce.xyz"
-                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_reproduce.xyz"
 
-                    data1.fileToOpen = "file:////Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
-                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
+//                    data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model.xyz"
+//                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+//                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model.xyz"
+
+//                    data1.fileToOpen = "file:////Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
+//                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+//                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
 
 
                 }
