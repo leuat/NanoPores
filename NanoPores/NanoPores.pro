@@ -38,7 +38,9 @@ SOURCES += main.cpp \
     GeometryLibrary/misc/distancetoatommap.cpp \
     GeometryLibrary/misc/points.cpp \
     GeometryLibrary/measures/poresizedistribution.cpp \
-    GeometryLibrary/models/mkiimodel.cpp
+    GeometryLibrary/models/mkiimodel.cpp \
+    GeometryLibrary/measures/gofr.cpp \
+    GeometryLibrary/measures/neighborlist.cpp
 
 RESOURCES += qml.qrc
 
@@ -81,7 +83,9 @@ HEADERS += \
     GeometryLibrary/misc/distancetoatommap.h \
     GeometryLibrary/misc/points.h \
     GeometryLibrary/measures/poresizedistribution.h \
-    GeometryLibrary/models/mkiimodel.h
+    GeometryLibrary/models/mkiimodel.h \
+    GeometryLibrary/measures/gofr.h \
+    GeometryLibrary/measures/neighborlist.h
 
 DISTFILES += \
     GeometryLibrary/README.md
