@@ -107,6 +107,18 @@ void MyWorker::calculateCurrentStatistics() {
     QVector<QPointF> hist2 = da2.histogram(100);
     qDebug() << "DTA finished after " << t.elapsed() << " ms";
 
+    LGraph model;
+    model.fromQVector(hist1);
+    model.normalizeArea();
+
+    LGraph data;
+    data.fromQVector(hist2);
+    data.normalizeArea();
+
+    float chisq = LGraph::ChiSQ(data, model);
+//    qDebug() << "Chisq: " << chisq;
+
+
     workerData->dataSource2()->setPoints(hist1, true);
     workerData->dataSource3()->setPoints(hist2, true);
 //    workerData->dataSource2()->setPoints(gr1.histogram(true, 0, 5), true);
@@ -119,7 +131,7 @@ bool MyWorker::manageCommands()
         QStringList cmd = workerData->command().toLower().split(" ");
         QString command = cmd[0];
 //        m_likelihood.setNumberOfRandomVectors(4*32768);
-        m_likelihood.setNumberOfRandomVectors(10000);
+        m_likelihood.setNumberOfRandomVectors(30000);
         if (command=="statistics") {
             m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
@@ -127,7 +139,7 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.bruteForce1D(20, cmd[1], workerData->model());
+            m_likelihood.bruteForce1D(30, cmd[1], workerData->model());
         } else if(command == "current_statistics") {
             calculateCurrentStatistics();
             workerData->setCommand("");
