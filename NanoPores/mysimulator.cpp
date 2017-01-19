@@ -89,12 +89,12 @@ void MyWorker::calculateCurrentStatistics() {
     DistanceToAtom da(distanceToAtomNumVectors);
     da.compute(points, distanceToAtomCutoff);
     QVector<QPointF> hist1 = da.histogram(100);
-    qDebug() << "hist1: " << hist1;
+    //qDebug() << "hist1: " << hist1;
 
     DistanceToAtom da2(distanceToAtomNumVectors);
     da2.compute(m_dataParticles.getQVector3DList(), distanceToAtomCutoff);
     QVector<QPointF> hist2 = da2.histogram(100);
-    qDebug() << "hist2: " << hist2;
+    //qDebug() << "hist2: " << hist2;
 
     workerData->dataSource2()->setPoints(hist1, true);
     workerData->dataSource3()->setPoints(hist2, true);
@@ -119,13 +119,12 @@ bool MyWorker::manageCommands()
             calculateCurrentStatistics();
             workerData->setCommand("");
         } else if (command=="likelihoodmontecarlo") {
-            m_likelihood.setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << "ZERO particles in data input!";
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.monteCarlo(workerData->model(), 100000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
+            m_likelihood.monteCarlo(workerData->model(), 1000000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
         } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
@@ -291,6 +290,8 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
 
         model->start();
         // #pragma omp parallel for num_threads(8)
+        float inside = 0;
+
         for(int i=0; i<numberOfParticles; i++) {
             Particle *particle = m_particles.getParticles()[i];
             const QVector3D position = particle->getPos();
@@ -300,11 +301,13 @@ void MyWorker::constrainParticles(Spheres* spheres, Particles* extraList) {
             {
                 if (!model->isInVoid(position)) {
                     shouldBeAdded[i] = true;
+                    inside++;
                 }
             }
         }
-
         model->stop();
+
+//        qDebug() << "Actual porousity: " << (1-(inside/(float)numberOfParticles))*100 << "%";
 
         for(int i=0; i<numberOfParticles; i++) {
             Particle *pos = m_particles.getParticles()[i];

@@ -28,6 +28,10 @@ Window {
         id: multiFractalModel
     }
 
+    MKIIModel {
+        id: mkiiModel
+    }
+
     MySimulator {
         id: simulator1
         data: WorkerData {
@@ -52,6 +56,7 @@ Window {
             lblInfo: lblinfo2.text
             //            model: multiFractalModel
             model: regularNoiseModel
+//            model: mkiiModel
         }
     }
 
@@ -101,6 +106,19 @@ Window {
                     fileDialogOpenOriginal.open()
                 }
             }
+            Button {
+                id: btnDirty
+                text: "You dirty boy"
+                onClicked: {
+                    data1.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/sio2_100_systems_255katoms/system33.xyz"
+                    data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
+                    data2.command = "loaddata "+data1.fileToOpen
+
+                    data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+                }
+            }
 //            Button {
 //                id: btnDirty
 //                text: "You dirty boy"
@@ -108,10 +126,19 @@ Window {
 //                    data1.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/sio2_100_systems_255katoms/system33.xyz"
 //                    data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
 //                    data2.command = "loaddata "+data1.fileToOpen
-
+//
 //                        data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
 //                        data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
 //                        data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+
+
+//                    data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model.xyz"
+//                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+//                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model.xyz"
+
+//                    data1.fileToOpen = "file:////Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
+//                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+//                    data2.command = "loaddata file:///Users/nicolaasgroeneboom/Dropbox/noisegeometry/states/mcmc_mkii_reproduce.xyz"
 //                }
 //            }
             Button {

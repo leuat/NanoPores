@@ -37,7 +37,8 @@ SOURCES += main.cpp \
     GeometryLibrary/misc/grid.cpp \
     GeometryLibrary/misc/distancetoatommap.cpp \
     GeometryLibrary/misc/points.cpp \
-    GeometryLibrary/measures/poresizedistribution.cpp
+    GeometryLibrary/measures/poresizedistribution.cpp \
+    GeometryLibrary/models/mkiimodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -79,7 +80,8 @@ HEADERS += \
     GeometryLibrary/misc/grid.h \
     GeometryLibrary/misc/distancetoatommap.h \
     GeometryLibrary/misc/points.h \
-    GeometryLibrary/measures/poresizedistribution.h
+    GeometryLibrary/measures/poresizedistribution.h \
+    GeometryLibrary/models/mkiimodel.h
 
 DISTFILES += \
     GeometryLibrary/README.md
