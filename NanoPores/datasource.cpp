@@ -1,5 +1,6 @@
 #include "datasource.h"
 #include <QDebug>
+#include <QFile>
 
 bool DataSource::isValid()
 {
@@ -72,6 +73,20 @@ void DataSource::setPoints(QVector<QPointF> points, bool normalized)
         normalizeArea();
     }
     update();
+
+}
+
+void DataSource::save(QString filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    for(int i=0; i<m_xValues.size(); i++) {
+        out << m_xValuesRaw[i] << ", " << m_yValuesRaw[i] << endl;
+    }
+    file.close();
 }
 
 void DataSource::normalizeArea()
@@ -98,6 +113,11 @@ void DataSource::normalizeArea()
     }
 }
 
+QString DataSource::name() const
+{
+    return m_name;
+}
+
 void DataSource::update()
 {
     if(!isValid()) {
@@ -116,6 +136,9 @@ void DataSource::update()
     }
 
     emit updated();
+    if(!m_name.isEmpty()) {
+        save(m_name+".txt");
+    }
 }
 
 void DataSource::setXValues(QVariantList xValues)
@@ -134,4 +157,13 @@ void DataSource::setYValues(QVariantList yValues)
 
     m_yValues = yValues;
     emit yValuesChanged(yValues);
+}
+
+void DataSource::setName(QString name)
+{
+    if (m_name == name)
+        return;
+
+    m_name = name;
+    emit nameChanged(name);
 }

@@ -40,7 +40,7 @@ Window {
 
     MySimulator {
         id: simulator2
-        data: WorkerData{
+        data: WorkerData {
             id: data2
             workerName: "Right"
             slice: sliderSlice.value
@@ -101,19 +101,19 @@ Window {
                     fileDialogOpenOriginal.open()
                 }
             }
-            Button {
-                id: btnDirty
-                text: "You dirty boy"
-                onClicked: {
-                    data1.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/sio2_100_systems_255katoms/system33.xyz"
-                    data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
-                    data2.command = "loaddata "+data1.fileToOpen
+//            Button {
+//                id: btnDirty
+//                text: "You dirty boy"
+//                onClicked: {
+//                    data1.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/sio2_100_systems_255katoms/system33.xyz"
+//                    data2.fileToOpen = "file:///Users/anderhaf/Dropbox/uio/phd/2016/noisegeometry/states/lammps/sio2_1mill.xyz"
+//                    data2.command = "loaddata "+data1.fileToOpen
 
-                        data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
-                        data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
-                        data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
-                }
-            }
+//                        data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+//                        data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+//                        data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+//                }
+//            }
             Button {
                 id: btnStatistics
                 text: "Model statistics"
@@ -283,7 +283,7 @@ Window {
         x: parent.width*0.5
         y: 60
         id: btnSave
-        text: "Save"
+        text: "Save structure"
         onClicked: {
             fileDialogSave.mode = "data"
             fileDialogSave.open()
@@ -338,6 +338,7 @@ Window {
                 name: "Model"
                 dataSource: DataSource {
                     id: dataSource2
+                    name: "model"
                 }
             }
 
@@ -347,6 +348,7 @@ Window {
                 name: "Data"
                 dataSource: DataSource {
                     id: dataSource3
+                    name: "data"
                 }
             }
         }
