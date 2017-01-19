@@ -1,10 +1,7 @@
 TEMPLATE = app
 CONFIG += c++11
-#QMAKE_CXXFLAGS += -fopenmp
-#QMAKE_LFLAGS += -fopenmp
-#QMAKE_CXXFLAGS += -O3 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
-
-#CONFIG -=app_bundle
+QMAKE_CXXFLAGS += -fopenmp -g
+QMAKE_LFLAGS += -fopenmp
 QT += qml quick widgets opengl openglextensions charts svg
 
 INCLUDEPATH += /usr/local/include
@@ -40,7 +37,8 @@ SOURCES += main.cpp \
     GeometryLibrary/measures/poresizedistribution.cpp \
     GeometryLibrary/models/mkiimodel.cpp \
     GeometryLibrary/measures/gofr.cpp \
-    GeometryLibrary/measures/neighborlist.cpp
+    GeometryLibrary/measures/neighborlist.cpp \
+    GeometryLibrary/gofrlikelihood.cpp
 
 RESOURCES += qml.qrc
 
@@ -85,7 +83,8 @@ HEADERS += \
     GeometryLibrary/measures/poresizedistribution.h \
     GeometryLibrary/models/mkiimodel.h \
     GeometryLibrary/measures/gofr.h \
-    GeometryLibrary/measures/neighborlist.h
+    GeometryLibrary/measures/neighborlist.h \
+    GeometryLibrary/gofrlikelihood.h
 
 DISTFILES += \
     GeometryLibrary/README.md
