@@ -5,6 +5,7 @@
 #include "GeometryLibrary/measures/distancetoatom.h"
 #include "GeometryLibrary/noise.h"
 #include "GeometryLibrary/models/octree.h"
+#include "GeometryLibrary/measures/gofr.h"
 
 using namespace std;
 
@@ -85,19 +86,31 @@ void MyWorker::calculateCurrentStatistics() {
         return;
 
     constrainParticles(nullptr, &newList);
-    QVector<QVector3D> points = newList.getQVector3DList();
-    DistanceToAtom da(distanceToAtomNumVectors);
-    da.compute(points, distanceToAtomCutoff);
-    QVector<QPointF> hist1 = da.histogram(100);
-    //qDebug() << "hist1: " << hist1;
 
+    QVector<QVector3D> points = newList.getQVector3DList();
+    QVector<QVector3D> points2 = m_dataParticles.getQVector3DList();
+
+    GOfR gr1;
+    GOfR gr2;
+    QElapsedTimer t;
+    t.start();
+//    gr1.compute(points, 12, 250);
+//    gr2.compute(points2, 12, 250);
+    qDebug() << "g of r finished after " << t.elapsed() << " ms";
+
+    DistanceToAtom da(distanceToAtomNumVectors);
     DistanceToAtom da2(distanceToAtomNumVectors);
+    t.restart();
+    da.compute(points, distanceToAtomCutoff);
     da2.compute(m_dataParticles.getQVector3DList(), distanceToAtomCutoff);
+    QVector<QPointF> hist1 = da.histogram(100);
     QVector<QPointF> hist2 = da2.histogram(100);
-    //qDebug() << "hist2: " << hist2;
+    qDebug() << "DTA finished after " << t.elapsed() << " ms";
 
     workerData->dataSource2()->setPoints(hist1, true);
     workerData->dataSource3()->setPoints(hist2, true);
+//    workerData->dataSource2()->setPoints(gr1.histogram(true, 0, 5), true);
+//    workerData->dataSource3()->setPoints(gr2.histogram(true, 0, 5), true);
 }
 
 bool MyWorker::manageCommands()
