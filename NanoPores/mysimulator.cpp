@@ -88,8 +88,8 @@ void MyWorker::calculateCurrentStatistics() {
     t.start();
     gr1.compute(points);
     gr2.compute(points2);
-    gr1.setXRange(1.0, 1000);
-    gr2.setXRange(1.0, 1000);
+    gr1.setXRange(2.0, 1000);
+    gr2.setXRange(2.0, 1000);
     qDebug() << "g of r finished after " << t.elapsed() << " ms";
     int numRandomVectors = 10000;
     float cutoff = 15;
@@ -112,11 +112,11 @@ void MyWorker::calculateCurrentStatistics() {
 
     LGraph model;
     model.fromQVector(hist1);
-    model.normalizeArea();
+    // model.normalizeArea();
 
     LGraph data;
     data.fromQVector(hist2);
-    data.normalizeArea();
+    // data.normalizeArea();
 
     float chisq = LGraph::ChiSQ(data, model);
 //    qDebug() << "Chisq: " << chisq;
@@ -127,18 +127,24 @@ void MyWorker::calculateCurrentStatistics() {
 
 bool MyWorker::manageCommands()
 {
+    m_dtaLikelihood.setNumberOfRandomVectors(30000);
+
+    m_gOfRLikelihood.setCutoff(15);
+    m_gOfRLikelihood.setNumberOfHistogramBins(100);
+
+    m_likelihood = &m_gOfRLikelihood;
+    // m_likelihood = &m_dtaLikelihood;
     if (!workerData->command().isEmpty()) {
         QStringList cmd = workerData->command().toLower().split(" ");
         QString command = cmd[0];
-        m_likelihood.setNumberOfRandomVectors(30000);
         if (command=="statistics") {
-            m_likelihood.setOriginalInput(&m_particles);
+            m_likelihood->setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << "ZERO particles in data input!";
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.bruteForce1D(30, cmd[1], workerData->model());
+            m_likelihood->bruteForce1D(30, cmd[1], workerData->model());
         } else if(command == "current_statistics") {
             calculateCurrentStatistics();
             workerData->setCommand("");
@@ -148,11 +154,11 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
-            m_likelihood.monteCarlo(workerData->model(), 1000000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
+            m_likelihood->monteCarlo(workerData->model(), 1000000, Likelihood::AnalysisAlgorithm::FullMonteCarlo);
         } else if (command=="loaddata") {
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
-            m_likelihood.setDataInput(&m_dataParticles);
+            m_likelihood->setDataInput(&m_dataParticles);
         } else if (command =="calculate_porosity") {
             calculatePorosity();
         } else if (command == "save_statistics") {
@@ -162,14 +168,14 @@ bool MyWorker::manageCommands()
         } else if (command == "calculate_fractal_dimension") {
             calculateFractalDimension();
         } else if (command=="calculate_model_statistics") {
-            m_likelihood.setOriginalInput(&m_particles);
+            m_likelihood->setOriginalInput(&m_particles);
             if (m_dataParticles.size()==0) {
                 qDebug() << "ZERO particles in data input!";
                 workerData->setCommand("");
                 return false;
             }
 
-            calculateModelStatistics();
+            calculateModelStatistics(m_likelihood);
         } else {
             qDebug() << workerData->workerName() << "Could not parse command: " << cmd[0];
         }
@@ -267,27 +273,26 @@ void MyWorker::saveStatistics()
 {
     string dir = "";
 
-    LGraph dataDTA = m_likelihood.calculateStatisticsDirect(m_dataParticles);
+    LGraph dataDTA = m_dtaLikelihood.calculateStatisticsDirect(m_dataParticles);
     Particles newList;
     constrainParticles(nullptr, &newList);
-    LGraph modelDTA = m_likelihood.calculateStatisticsDirect(newList);
+    LGraph modelDTA = m_dtaLikelihood.calculateStatisticsDirect(newList);
 
     dataDTA.SaveText(dir + "dta_data.txt");
     modelDTA.SaveText(dir +"dta_model.txt");
+    m_dtaLikelihood.setOriginalInput(&m_particles);
+    m_dtaLikelihood.modelAnalysis(50, workerData->model());
 
-    m_likelihood.setOriginalInput(&m_particles);
-    m_likelihood.modelAnalysis(50, workerData->model());
-
-    while (m_likelihood.getDone()==false)
-        if (m_likelihood.tick()) {
-            m_likelihood.getStatistics().average().SaveText("model_average.txt");
-            m_likelihood.getStatistics().sigma().SaveText("model_sigma.txt");
+    while (m_dtaLikelihood.getDone()==false)
+        if (m_dtaLikelihood.tick()) {
+            m_dtaLikelihood.getStatistics().average().SaveText("model_average.txt");
+            m_dtaLikelihood.getStatistics().sigma().SaveText("model_sigma.txt");
         }
 }
 
-void MyWorker::calculateModelStatistics()
+void MyWorker::calculateModelStatistics(Likelihood *lh)
 {
-    m_likelihood.modelAnalysis(15, workerData->model());
+    lh->modelAnalysis(15, workerData->model());
 }
 
 
@@ -384,15 +389,15 @@ void MyWorker::synchronizeSimulator(Simulator *simulator)
         bool everythingOK = manageCommands();
 
         if(everythingOK) {
-            if (m_likelihood.tick()) {
-                workerData->dataSource()->setPoints(m_likelihood.likelihood().toQVector());
-                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
-                workerData->dataSource3()->setPoints(m_likelihood.data().toQVector());
+            if (m_likelihood->tick()) {
+                workerData->dataSource()->setPoints(m_likelihood->likelihood().toQVector());
+                workerData->dataSource2()->setPoints(m_likelihood->modelData().toQVector());
+                workerData->dataSource3()->setPoints(m_likelihood->data().toQVector());
             }
-            if (m_likelihood.getDone()){
-                m_likelihood.setDone(false);
-                workerData->dataSource2()->setPoints(m_likelihood.modelData().toQVector());
-                qDebug() << "Min value: " << m_likelihood.getMinVal();
+            if (m_likelihood->getDone()){
+                m_likelihood->setDone(false);
+                workerData->dataSource2()->setPoints(m_likelihood->modelData().toQVector());
+                qDebug() << "Min value: " << m_likelihood->getMinVal();
             }
         }
     }

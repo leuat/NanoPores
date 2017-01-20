@@ -11,6 +11,7 @@
 #include "QMLPlot/linegraph.h"
 #include "GeometryLibrary/models/models.h"
 #include "GeometryLibrary/likelihood/dtalikelihood.h"
+#include "GeometryLibrary/likelihood/gofrlikelihood.h"
 #include "datasource.h"
 
 class WorkerData : public QObject {
@@ -100,7 +101,9 @@ private:
     Particles m_particles;
     Particles m_dataParticles;
     Spheres m_spheres;
-    DTALikelihood m_likelihood;
+    ParticleLikelihood *m_likelihood = nullptr;
+    DTALikelihood m_dtaLikelihood;
+    GOfRLikelihood m_gOfRLikelihood;
     float m_porosity = 0;
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
@@ -116,7 +119,7 @@ private:
 
     void calculatePorosity();
     // This one calculates E(x) and sigma for the given model
-    void calculateModelStatistics();
+    void calculateModelStatistics(Likelihood *lh);
 
     // SimulatorWorker interface
     virtual void synchronizeSimulator(Simulator *simulator);
