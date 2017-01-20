@@ -11,8 +11,7 @@ using namespace std;
 
 MySimulator::MySimulator()
 {
-    //   if (m_data!=nullptr)
-    //     m_data->Allocate();
+
 }
 
 WorkerData *MySimulator::data() const
@@ -48,12 +47,10 @@ void MyWorker::addParticleToSphere(Particle* p, Spheres *spheres, Particles* ext
 
 void MyWorker::openFile()
 {
-    if (workerData==nullptr)
-        return;
-
+    if (workerData==nullptr) return;
     if (!workerData->fileToOpen().isEmpty()) {
         QUrl url = workerData->fileToOpen();
-        qDebug() << workerData->workerName() << " is opening file " << url;
+        qDebug() << workerData->workerName() << " will opening file " << url;
         m_particles.open(url.toLocalFile().toStdString().c_str());
         qDebug() << workerData->workerName() << " done opening file." << url;
         workerData->setFileToOpen("");
@@ -62,8 +59,7 @@ void MyWorker::openFile()
 
 void MyWorker::saveFile()
 {
-    if (workerData==nullptr)
-        return;
+    if (workerData==nullptr) return;
 
     if (!workerData->fileToSave().isEmpty()) {
         QUrl url = workerData->fileToSave();
@@ -75,37 +71,40 @@ void MyWorker::saveFile()
 }
 
 void MyWorker::calculateCurrentStatistics() {
-    int distanceToAtomNumVectors = 150000;
-    float distanceToAtomCutoff = 15;
+    if (workerData==nullptr) return;
+    if (m_particles.size()==0) return;
 
-    if (workerData==nullptr)
-        return;
     Particles newList;
-    // First, copy particles to single list
-    if (m_particles.size()==0)
-        return;
-
     constrainParticles(nullptr, &newList);
 
     QVector<QVector3D> points = newList.getQVector3DList();
     QVector<QVector3D> points2 = m_dataParticles.getQVector3DList();
+    QElapsedTimer t;
 
     GOfR gr1;
     GOfR gr2;
-    QElapsedTimer t;
     t.start();
-//    gr1.compute(points, 12, 250);
-//    gr2.compute(points2, 12, 250);
+    gr1.compute(points, 12, 250);
+    gr2.compute(points2, 12, 250);
     qDebug() << "g of r finished after " << t.elapsed() << " ms";
+    int numRandomVectors = 10000;
+    float cutoff = 15;
 
-    DistanceToAtom da(distanceToAtomNumVectors);
-    DistanceToAtom da2(distanceToAtomNumVectors);
+    DistanceToAtom da;
+    DistanceToAtom da2;
+    da.setNumberOfRandomVectors(numRandomVectors);
+    da2.setNumberOfRandomVectors(numRandomVectors);
+    da.setCutoff(cutoff);
+    da2.setCutoff(cutoff);
     t.restart();
-    da.compute(points, distanceToAtomCutoff);
-    da2.compute(m_dataParticles.getQVector3DList(), distanceToAtomCutoff);
+    da.compute(points);
+    da2.compute(points2);
     QVector<QPointF> hist1 = da.histogram(100);
     QVector<QPointF> hist2 = da2.histogram(100);
     qDebug() << "DTA finished after " << t.elapsed() << " ms";
+
+    hist1 = gr1.histogram(true, 0, 5);
+    hist2 = gr2.histogram(true, 0, 5);
 
     LGraph model;
     model.fromQVector(hist1);
@@ -121,8 +120,6 @@ void MyWorker::calculateCurrentStatistics() {
 
     workerData->dataSource2()->setPoints(hist1, true);
     workerData->dataSource3()->setPoints(hist2, true);
-//    workerData->dataSource2()->setPoints(gr1.histogram(true, 0, 5), true);
-//    workerData->dataSource3()->setPoints(gr2.histogram(true, 0, 5), true);
 }
 
 bool MyWorker::manageCommands()
@@ -130,7 +127,6 @@ bool MyWorker::manageCommands()
     if (!workerData->command().isEmpty()) {
         QStringList cmd = workerData->command().toLower().split(" ");
         QString command = cmd[0];
-//        m_likelihood.setNumberOfRandomVectors(4*32768);
         m_likelihood.setNumberOfRandomVectors(30000);
         if (command=="statistics") {
             m_likelihood.setOriginalInput(&m_particles);
@@ -248,9 +244,11 @@ void MyWorker::calculateStatistics()
     constrainParticles(nullptr, &newList);
     QVector<QVector3D> points;
     newList.appendToQVector3DList(points);
-    DistanceToAtom da(4000);
+    DistanceToAtom da;
+    da.setNumberOfRandomVectors(4000);
+    da.setCutoff(20);
 
-    da.compute(points, 20.0);
+    da.compute(points);
     QVector<QPointF> hist = da.histogram(100);
 
     workerData->dataSource2()->setPoints(hist, true);
