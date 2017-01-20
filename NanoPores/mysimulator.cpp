@@ -88,6 +88,8 @@ void MyWorker::calculateCurrentStatistics() {
     t.start();
     gr1.compute(points);
     gr2.compute(points2);
+    gr1.setXRange(1.0, 1000);
+    gr2.setXRange(1.0, 1000);
     qDebug() << "g of r finished after " << t.elapsed() << " ms";
     int numRandomVectors = 10000;
     float cutoff = 15;
@@ -118,7 +120,6 @@ void MyWorker::calculateCurrentStatistics() {
 
     float chisq = LGraph::ChiSQ(data, model);
 //    qDebug() << "Chisq: " << chisq;
-
 
     workerData->dataSource2()->setPoints(hist1, true);
     workerData->dataSource3()->setPoints(hist2, true);
