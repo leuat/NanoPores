@@ -82,10 +82,12 @@ void MyWorker::calculateCurrentStatistics() {
     QElapsedTimer t;
 
     GOfR gr1;
+    gr1.setCutoff(12); gr1.setNumBins(250);
     GOfR gr2;
+    gr2.setCutoff(12); gr2.setNumBins(250);
     t.start();
-    gr1.compute(points, 12, 250);
-    gr2.compute(points2, 12, 250);
+    gr1.compute(points);
+    gr2.compute(points2);
     qDebug() << "g of r finished after " << t.elapsed() << " ms";
     int numRandomVectors = 10000;
     float cutoff = 15;
@@ -103,8 +105,8 @@ void MyWorker::calculateCurrentStatistics() {
     QVector<QPointF> hist2 = da2.histogram(100);
     qDebug() << "DTA finished after " << t.elapsed() << " ms";
 
-    hist1 = gr1.histogram(true, 0, 5);
-    hist2 = gr2.histogram(true, 0, 5);
+    hist1 = gr1.histogram(100);
+    hist2 = gr2.histogram(100);
 
     LGraph model;
     model.fromQVector(hist1);
