@@ -11,17 +11,19 @@ SOURCES += main.cpp \
     mysimulator.cpp \
     io.cpp \
     GeometryLibrary/likelihood/lgraph.cpp \
-    GeometryLibrary/particle.cpp \
-    GeometryLibrary/dtalikelihood.cpp \
+    GeometryLibrary/likelihood/gofrlikelihood.cpp \
+    GeometryLibrary/likelihood/particlelikelihood.cpp \
+    GeometryLibrary/likelihood/dtalikelihood.cpp \
+    GeometryLibrary/likelihood/graphstatistics.cpp \
     GeometryLibrary/likelihood/likelihood.cpp \
     GeometryLibrary/misc/util.cpp \
+    GeometryLibrary/particle.cpp \
     GeometryLibrary/models/model.cpp \
     GeometryLibrary/models/multifractalmodel.cpp \
     GeometryLibrary/noise.cpp \
     GeometryLibrary/perlin.cpp \
     GeometryLibrary/simplex.cpp \
     GeometryLibrary/simplexnoise.cpp \
-    GeometryLibrary/likelihood/graphstatistics.cpp \
     GeometryLibrary/parameters.cpp \
     GeometryLibrary/models/regularnoisemodel.cpp \
     GeometryLibrary/models/xyzmodel.cpp \
@@ -37,8 +39,7 @@ SOURCES += main.cpp \
     GeometryLibrary/measures/poresizedistribution.cpp \
     GeometryLibrary/models/mkiimodel.cpp \
     GeometryLibrary/measures/gofr.cpp \
-    GeometryLibrary/measures/neighborlist.cpp \
-    GeometryLibrary/gofrlikelihood.cpp
+    GeometryLibrary/measures/neighborlist.cpp
 
 RESOURCES += qml.qrc
 
@@ -55,6 +56,10 @@ HEADERS += \
     GeometryLibrary/likelihood/lgraph.h \
     GeometryLibrary/likelihood/likelihood.h \
     GeometryLibrary/likelihood/spline.h \
+    GeometryLibrary/likelihood/gofrlikelihood.h \
+    GeometryLibrary/likelihood/particlelikelihood.h \
+    GeometryLibrary/likelihood/graphstatistics.h \
+    GeometryLibrary/likelihood/dtalikelihood.h \
     GeometryLibrary/misc/util.h \
     GeometryLibrary/models/model.h \
     GeometryLibrary/models/multifractalmodel.h \
@@ -62,7 +67,6 @@ HEADERS += \
     GeometryLibrary/perlin.h \
     GeometryLibrary/simplex.h \
     GeometryLibrary/simplexnoise.h \
-    GeometryLibrary/likelihood/graphstatistics.h \
     GeometryLibrary/parameters.h \
     GeometryLibrary/models/models.h \
     GeometryLibrary/models/regularnoisemodel.h \
@@ -73,7 +77,6 @@ HEADERS += \
     GeometryLibrary/models/octree.h \
     GeometryLibrary/misc/random.h \
     GeometryLibrary/logger.h \
-    GeometryLibrary/dtalikelihood.h \
     GeometryLibrary/particle.h \
     GeometryLibrary/measures/measure.h \
     GeometryLibrary/measures/distancetoatom.h \
@@ -83,8 +86,6 @@ HEADERS += \
     GeometryLibrary/measures/poresizedistribution.h \
     GeometryLibrary/models/mkiimodel.h \
     GeometryLibrary/measures/gofr.h \
-    GeometryLibrary/measures/neighborlist.h \
-    GeometryLibrary/gofrlikelihood.h
-
+    GeometryLibrary/measures/neighborlist.h
 DISTFILES += \
     GeometryLibrary/README.md

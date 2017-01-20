@@ -10,7 +10,7 @@
 #include "GeometryLibrary/particle.h"
 #include "QMLPlot/linegraph.h"
 #include "GeometryLibrary/models/models.h"
-#include "GeometryLibrary/dtalikelihood.h"
+#include "GeometryLibrary/likelihood/dtalikelihood.h"
 #include "datasource.h"
 
 class WorkerData : public QObject {
