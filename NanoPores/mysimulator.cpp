@@ -119,7 +119,7 @@ void MyWorker::calculateCurrentStatistics() {
     data.fromQVector(hist2);
     // data.normalizeArea();
 
-    float chisq = LGraph::ChiSQ(data, model);
+    float chisq = LGraph::ChiSQ(data, model, 1.0);
 //    qDebug() << "Chisq: " << chisq;
 
     workerData->dataSource2()->setPoints(hist1, false);
