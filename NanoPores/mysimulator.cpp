@@ -82,14 +82,15 @@ void MyWorker::calculateCurrentStatistics() {
     QElapsedTimer t;
 
     GOfR gr1;
-    gr1.setCutoff(12); gr1.setNumBins(250);
+    gr1.setCutoff(15); gr1.setNumBins(250);
     GOfR gr2;
-    gr2.setCutoff(12); gr2.setNumBins(250);
+    gr2.setCutoff(15); gr2.setNumBins(250);
     t.start();
     gr1.compute(points);
     gr2.compute(points2);
-    gr1.setXRange(2.0, 1000);
-    gr2.setXRange(2.0, 1000);
+    gr1.setXRange(3.0, 1000);
+    gr2.setXRange(3.0, 1000);
+
     qDebug() << "g of r finished after " << t.elapsed() << " ms";
     int numRandomVectors = 10000;
     float cutoff = 15;
@@ -121,8 +122,8 @@ void MyWorker::calculateCurrentStatistics() {
     float chisq = LGraph::ChiSQ(data, model);
 //    qDebug() << "Chisq: " << chisq;
 
-    workerData->dataSource2()->setPoints(hist1, true);
-    workerData->dataSource3()->setPoints(hist2, true);
+    workerData->dataSource2()->setPoints(hist1, false);
+    workerData->dataSource3()->setPoints(hist2, false);
 }
 
 bool MyWorker::manageCommands()
@@ -144,6 +145,8 @@ bool MyWorker::manageCommands()
                 workerData->setCommand("");
                 return false;
             }
+           // m_likelihood->setDataInput(&m_dataParticles);
+
             m_likelihood->bruteForce1D(30, cmd[1], workerData->model());
         } else if(command == "current_statistics") {
             calculateCurrentStatistics();

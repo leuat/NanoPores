@@ -117,6 +117,10 @@ Window {
                     data1.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
                     data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
                     data2.command = "loaddata file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_porous.xyz"
+
+                    data1.fileToOpen = "file:////Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model_3.xyz"
+                    data2.fileToOpen = "file:///Users/nicolaasgroeneboom/work/code/fys/NanoPores/data/sio2_bulk.xyz"
+                    data2.command = "loaddata file:////Users/nicolaasgroeneboom/work/code/fys/Nougat/scripts/models/mcmc_model_3.xyz"
                 }
             }
 //            Button {

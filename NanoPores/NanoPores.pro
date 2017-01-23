@@ -1,8 +1,9 @@
 TEMPLATE = app
 CONFIG += c++11
-QMAKE_CXXFLAGS += -fopenmp -g
-QMAKE_LFLAGS += -fopenmp
+#QMAKE_CXXFLAGS += -fopenmp -g
+#QMAKE_LFLAGS += -fopenmp
 QT += qml quick widgets opengl openglextensions charts svg
+QMAKE_MAC_SDK = macosx10.12
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lgsl
