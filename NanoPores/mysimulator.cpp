@@ -6,8 +6,13 @@
 #include "GeometryLibrary/noise.h"
 #include "GeometryLibrary/models/octree.h"
 #include "GeometryLibrary/measures/gofr.h"
-
+#include "GeometryLibrary/measures/surfacearea.h"
 using namespace std;
+
+MyWorker::MyWorker() {
+    SurfaceArea *surfaceArea = new SurfaceArea();
+    m_measures.push_back(surfaceArea);
+}
 
 MySimulator::MySimulator()
 {
@@ -108,8 +113,8 @@ void MyWorker::calculateCurrentStatistics() {
     QVector<QPointF> hist2 = da2.histogram(100);
     qDebug() << "DTA finished after " << t.elapsed() << " ms";
 
-    hist1 = gr1.histogram(100);
-    hist2 = gr2.histogram(100);
+//    hist1 = gr1.histogram(100);
+//    hist2 = gr2.histogram(100);
 
     LGraph model;
     model.fromQVector(hist1);
@@ -124,6 +129,11 @@ void MyWorker::calculateCurrentStatistics() {
 
     workerData->dataSource2()->setPoints(hist1, false);
     workerData->dataSource3()->setPoints(hist2, false);
+
+    for(Measure *measure : m_measures) {
+        measure->compute(points, true);
+        measure->compute(points2, true);
+    }
 }
 
 bool MyWorker::manageCommands()
@@ -162,6 +172,7 @@ bool MyWorker::manageCommands()
             QUrl url = cmd[1];
             m_dataParticles.open(url.toLocalFile().toStdString().c_str());
             m_likelihood->setDataInput(&m_dataParticles);
+            qDebug() << "Loaded " << m_likelihood->dataParticles().size() << " data particles";
         } else if (command =="calculate_porosity") {
             calculatePorosity();
         } else if (command == "save_statistics") {

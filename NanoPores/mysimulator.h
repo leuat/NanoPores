@@ -104,6 +104,7 @@ private:
     ParticleLikelihood *m_likelihood = nullptr;
     DTALikelihood m_dtaLikelihood;
     GOfRLikelihood m_gOfRLikelihood;
+    QVector<Measure*> m_measures;
     float m_porosity = 0;
 
     void constrainParticles(Spheres* spheres, Particles* extraList);
@@ -126,7 +127,7 @@ private:
     virtual void work();
 
 public:
-    MyWorker() { }
+    MyWorker();
     ~MyWorker() {
         m_particles.clear();
     }
